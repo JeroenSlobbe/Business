@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printer business case calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: calc(100% - 10px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .result table, .result th, .result td {
+            border: 1px solid #ccc;
+        }
+
+        .result th, .result td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .result th {
+            background-color: #f2f2f2;
+        }
+
+        .result td span {
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>3D Printer Business Case Calculator</h1>
+		The 3D Print Business Case Calculator is designed to assist users in determining the potential profitability of their 3D printing projects. By factoring in all costs associated with 3D printing, this calculator provides a comprehensive analysis of the total expenses and expected profits. Users can input detailed information about material costs, printer costs, electricity costs, labor costs, and additional business expenses. The calculator considers factors such as material weight, print time, energy consumption, and hourly wage, as well as specific activities like modeling, slicing, setup, and packaging. By aggregating these inputs, the calculator outputs key financial metrics including total material cost, total labor cost, total energy cost, total business cost, the product price, and the suggested selling price, helping users make informed decisions about pricing and profitability. Of course, if you do 3D printing as a hobby, you could set the labour costs to 0 :).
+        <form id="marginForm">
+            <h2>Product Characteristics</h2>
+            <div class="input-group">
+                <label for="materialWeight">Material Weight (grams):</label>
+                <input type="number" id="materialWeight" name="materialWeight" required>
+            </div>
+            <div class="input-group">
+                <label for="printTime">Print Time (hours):</label>
+                <input type="number" id="printTime" name="printTime" required>
+            </div>
+
+            <h2>Material Cost</h2>
+            <div class="input-group">
+                <label for="materialCostPerKg">Cost per Kg of Material (€):</label>
+                <input type="number" id="materialCostPerKg" name="materialCostPerKg" required>
+            </div>
+
+            <h2>Printer Cost</h2>
+            <div class="input-group">
+                <label for="printerCost">Cost of Printer (€):</label>
+                <input type="number" id="printerCost" name="printerCost" required>
+            </div>
+            <div class="input-group">
+                <label for="printerLife">Printer Life Expectancy (hours):</label>
+                <input type="number" id="printerLife" name="printerLife" value="7500" required>
+            </div>
+
+            <h2>Electricity Cost</h2>
+            <div class="input-group">
+                <label for="kwhPrice">KWH Price (€):</label>
+                <input type="number" id="kwhPrice" name="kwhPrice" value="0.33" required>
+            </div>
+            <div class="input-group">
+                <label for="printerEnergyConsumption">Printer Energy Consumption (KWH):</label>
+                <input type="number" id="printerEnergyConsumption" name="printerEnergyConsumption" value="0.12" required>
+            </div>
+
+            <h2>Labour Cost</h2>
+            <div class="input-group">
+                <label for="hourlyWage">Hourly Wage (€):</label>
+                <input type="number" id="hourlyWage" name="hourlyWage" value="14" required>
+            </div>
+            <div class="input-group">
+                <label for="modelingTime">Modeling Time (hours):</label>
+                <input type="number" id="modelingTime" name="modelingTime" value="0" required>
+            </div>
+            <div class="input-group">
+                <label for="slicingTime">Slicing Time (minutes):</label>
+                <input type="number" id="slicingTime" name="slicingTime" value="0" required>
+            </div>
+            <div class="input-group">
+                <label for="setupTime">Printer Setup Time (minutes):</label>
+                <input type="number" id="setupTime" name="setupTime" value="0" required>
+            </div>
+
+            <h2>Cost of Doing Business</h2>
+            <div class="input-group">
+                <label for="packagingTime">Packaging Time (minutes):</label>
+                <input type="number" id="packagingTime" name="packagingTime" value="0" required>
+            </div>
+            <div class="input-group">
+                <label for="shipmentCost">Shipment Cost (€):</label>
+                <input type="number" id="shipmentCost" name="shipmentCost" value="0" required>
+            </div>
+            <div class="input-group">
+                <label for="packagingMaterialCost">Packaging Material Cost (€):</label>
+                <input type="number" id="packagingMaterialCost" name="packagingMaterialCost" value="0" required>
+            </div>
+            <div class="input-group">
+                <label for="otherCosts">Other Costs (€):</label>
+                <input type="number" id="otherCosts" name="otherCosts" value="0" required>
+            </div>
+
+            <div class="input-group">
+                <label for="desiredProfit">Desired Profit (€):</label>
+                <input type="number" id="desiredProfit" name="desiredProfit" value="0" required>
+            </div>
+
+            <button type="button" onclick="calculateMargin()">Calculate Print Economics</button>
+        </form>
+        <div id="errorMessages" class="error"></div>
+        <div class="result" id="result">
+            <table>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount (€)</th>
+                </tr>
+                <tr>
+                    <td>Total Material Cost:</td>
+                    <td><span id="totalMaterialCost">--</span></td>
+                </tr>
+                <tr>
+                    <td>Total Labour Cost:</td>
+                    <td><span id="totalLabourCost">--</span></td>
+                </tr>
+                <tr>
+                    <td>Total Energy Cost:</td>
+                    <td><span id="totalEnergyCost">--</span></td>
+                </tr>
+				<tr>
+                    <td>Printer depreciation:</td>
+                    <td><span id="printerDepreciation">--</span></td>
+                </tr>
+                <tr>
+                    <td>Cost of Doing Business:</td>
+                    <td><span id="totalBusinessCost">--</span></td>
+                </tr>
+                <tr>
+                    <td>Cost Price:</td>
+                    <td><span id="productPrice">--</span></td>
+                </tr>
+
+                <tr>
+                    <td>Market price:</td>
+                    <td><span id="suggestedPrice">--</span></td>
+                </tr>
+            </table>
+		<div class="result" id="result">
+			<table>
+                <tr>
+                    <th>Description</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Profit (€):</td>
+                    <td><span id="profit">--</span></td>
+                </tr>
+                <tr>
+                    <td>Margin (%):</td>
+                    <td><span id="productMargin">--</span></td>
+                </tr>
+                <tr>
+			</table>
+        </div>
+    </div>
+    <script>
+        function calculateMargin() {
+            var errorMessages = [];
+            var materialWeight = parseFloat(document.getElementById('materialWeight').value);
+            if (isNaN(materialWeight) || materialWeight <= 0) {
+                errorMessages.push('Please enter a valid positive number for Material Weight.');
+            }
+
+            var materialCostPerKg = parseFloat(document.getElementById('materialCostPerKg').value);
+            if (isNaN(materialCostPerKg) || materialCostPerKg <= 0) {
+                errorMessages.push('Please enter a valid positive number for Cost per Kg of Material.');
+            }
+
+            var printerCost = parseFloat(document.getElementById('printerCost').value);
+            if (isNaN(printerCost) || printerCost <= 0) {
+                errorMessages.push('Please enter a valid positive number for Cost of Printer.');
+            }
+
+            var printerLife = parseFloat(document.getElementById('printerLife').value);
+            if (isNaN(printerLife) || printerLife <= 0) {
+                errorMessages.push('Please enter a valid positive number for Printer Life Expectancy.');
+            }
+
+            var printTime = parseFloat(document.getElementById('printTime').value);
+            if (isNaN(printTime) || printTime <= 0            ) {
+                errorMessages.push('Please enter a valid positive number for Print Time.');
+            }
+
+            var kwhPrice = parseFloat(document.getElementById('kwhPrice').value);
+            if (isNaN(kwhPrice) || kwhPrice <= 0) {
+                errorMessages.push('Please enter a valid positive number for KWH Price.');
+            }
+
+            var printerEnergyConsumption = parseFloat(document.getElementById('printerEnergyConsumption').value);
+            if (isNaN(printerEnergyConsumption) || printerEnergyConsumption <= 0) {
+                errorMessages.push('Please enter a valid positive number for Printer Energy Consumption.');
+            }
+
+            var hourlyWage = parseFloat(document.getElementById('hourlyWage').value);
+            if (isNaN(hourlyWage) || hourlyWage < 0) {
+                errorMessages.push('Please enter a valid number for Hourly Wage.');
+            }
+
+            var modelingTime = parseFloat(document.getElementById('modelingTime').value);
+            if (isNaN(modelingTime) || modelingTime < 0) {
+                errorMessages.push('Please enter a valid number for Modeling Time.');
+            }
+
+            var slicingTime = parseFloat(document.getElementById('slicingTime').value);
+            if (isNaN(slicingTime) || slicingTime < 0) {
+                errorMessages.push('Please enter a valid number for Slicing Time.');
+            }
+
+            var setupTime = parseFloat(document.getElementById('setupTime').value);
+            if (isNaN(setupTime) || setupTime < 0) {
+                errorMessages.push('Please enter a valid number for Printer Setup Time.');
+            }
+
+            var packagingTime = parseFloat(document.getElementById('packagingTime').value);
+            if (isNaN(packagingTime) || packagingTime < 0) {
+                errorMessages.push('Please enter a valid number for Packaging Time.');
+            }
+
+            var shipmentCost = parseFloat(document.getElementById('shipmentCost').value);
+            if (isNaN(shipmentCost) || shipmentCost < 0) {
+                errorMessages.push('Please enter a valid number for Shipment Cost.');
+            }
+
+            var packagingMaterialCost = parseFloat(document.getElementById('packagingMaterialCost').value);
+            if (isNaN(packagingMaterialCost) || packagingMaterialCost < 0) {
+                errorMessages.push('Please enter a valid number for Packaging Material Cost.');
+            }
+
+            var otherCosts = parseFloat(document.getElementById('otherCosts').value);
+            if (isNaN(otherCosts) || otherCosts < 0) {
+                errorMessages.push('Please enter a valid number for Other Costs.');
+            }
+
+            var desiredProfit = parseFloat(document.getElementById('desiredProfit').value);
+            if (isNaN(desiredProfit)) {
+                errorMessages.push('Please enter a valid number for Desired Profit.');
+            }
+
+            if (errorMessages.length > 0) {
+                document.getElementById('errorMessages').innerHTML = errorMessages.join('<br>');
+                return;
+            } else {
+                document.getElementById('errorMessages').innerHTML = '';
+            }
+
+            var materialCost = (materialWeight / 1000) * materialCostPerKg;
+            var printerDepreciationCost = (printerCost / printerLife) * printTime;
+
+            var energyCost = printTime * printerEnergyConsumption * kwhPrice;
+            var laborCost = ((modelingTime + (slicingTime / 60) + (setupTime / 60) + (packagingTime / 60)) * hourlyWage);
+            var businessCost = packagingMaterialCost + shipmentCost + otherCosts;
+
+            var totalMaterialCost = materialCost + printerDepreciationCost;
+            var totalLaborCost = laborCost;
+            var totalEnergyCost = energyCost;
+			var depreciation = (printTime / printerLife) * printerCost;
+			var totalBusinessCost = businessCost;
+            var productPrice = totalMaterialCost + totalLaborCost + totalEnergyCost + totalBusinessCost + depreciation;
+            var totalCost = totalMaterialCost + totalLaborCost + totalEnergyCost + totalBusinessCost + depreciation + desiredProfit ;
+            var suggestedPrice = productPrice + desiredProfit
+            var profit = totalCost - productPrice;
+			var productMargin = (profit / totalCost) * 100;
+
+            document.getElementById('totalMaterialCost').innerText = totalMaterialCost.toFixed(2);
+            document.getElementById('totalLabourCost').innerText = totalLaborCost.toFixed(2);
+            document.getElementById('totalEnergyCost').innerText = totalEnergyCost.toFixed(2);
+			document.getElementById('printerDepreciation').innerText = depreciation.toFixed(2);
+            document.getElementById('totalBusinessCost').innerText = totalBusinessCost.toFixed(2);
+            document.getElementById('productPrice').innerText = productPrice.toFixed(2);
+            document.getElementById('profit').innerHTML = "<span style='font-weight: bold;'>" + profit.toFixed(2) + "</span>";
+            document.getElementById('suggestedPrice').innerText = suggestedPrice.toFixed(2);
+			document.getElementById('productMargin').innerText = productMargin.toFixed(2);
+			
+        }
+    </script>
+</body>
+</html>
+
+
