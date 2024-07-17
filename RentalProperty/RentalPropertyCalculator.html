@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rental Property Performance Evaluator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .result table, .result th, .result td {
+            border: 1px solid #ccc;
+        }
+
+        .result th, .result td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .result th {
+            background-color: #f2f2f2;
+        }
+
+        .result td span {
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <h1>Rental Property Performance Evaluator</h1>
+    <p>The goal of this rental property performance evaluator is to evaluate the financial performance of a property being rented to one or multiple tenants. The calculator does not factor in profits or losses that come from changes in the value of the underlying property, nor does it factor in depreciation of the assets. The tool is built to quickly assess the operating performance of the rental asset.</p>
+
+    <!-- Generic Info Block -->
+    <h2>Generic Info</h2>
+    <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" id="city">
+    </div>
+    <div class="form-group">
+        <label for="totalSquareMeters">Total Square Meters</label>
+        <input type="number" id="totalSquareMeters">
+    </div>
+    <div class="form-group">
+        <label for="averageAnnualNewTenants">Average Annual New Tenants</label>
+        <input type="number" id="averageAnnualNewTenants">
+    </div>
+    <div class="form-group">
+        <label for="purchasePrice">Purchasing Price (€)</label>
+        <input type="number" id="purchasePrice">
+    </div>
+
+    <!-- Income Block -->
+    <h2>Income</h2>
+    <div class="form-group">
+        <label for="monthlyRent">Monthly Rent Payments (€)</label>
+        <input type="number" id="monthlyRent">
+    </div>
+    <div class="form-group">
+        <label for="annualUtilization">Annual Utilization (%)</label>
+        <input type="number" id="annualUtilization" value="85">
+    </div>
+
+    <!-- Financial Expenses Block -->
+    <h2>Financial Expenses</h2>
+    <div class="form-group">
+        <label for="monthlyInsurance">Monthly Insurance Fee (Opstal, Aanspraakelijkheid, Inboedel, Rechtsbijstand) (€)</label>
+        <input type="number" id="monthlyInsurance">
+    </div>
+    <div class="form-group">
+        <label for="mortgageRent">Mortgage Rent (€)</label>
+        <input type="number" id="mortgageRent">
+    </div>
+    <div class="form-group">
+        <label for="propertyTax">Property Tax (Monthly OZB-belasting) (€)</label>
+        <input type="number" id="propertyTax">
+    </div>
+    <div class="form-group">
+        <label for="municipalityTax">Municipality Tax (Water, Sewer, Garbage Collection) (€)</label>
+        <input type="number" id="municipalityTax">
+    </div>
+    <div class="form-group">
+        <label for="groundLease">Ground Lease (Erfpacht) (€)</label>
+        <input type="number" id="groundLease" value="0">
+    </div>
+
+    <!-- Operating Expenses Block -->
+    <h2>Operating Expenses</h2>
+    <div class="form-group">
+        <label for="maintenanceReservation">Annual Maintenance Reservation (€)</label>
+        <input type="number" id="maintenanceReservation" placeholder="Recommended: 1% of Purchase Price">
+    </div>
+    <div class="form-group">
+        <label for="janitorHours">Monthly Janitor/Repair Time (hours)</label>
+        <input type="number" id="janitorHours" value="32">
+    </div>
+    <div class="form-group">
+        <label for="janitorHourlyWage">Janitor Hourly Wage (€)</label>
+        <input type="number" id="janitorHourlyWage" value="13.68">
+    </div>
+    <div class="form-group">
+        <label for="managementFee">Annual Management Fee (Contracting, Bookkeeping) (€)</label>
+        <input type="number" id="managementFee">
+    </div>
+    <div class="form-group">
+        <label for="marketingFee">Annual Marketing Fee (€)</label>
+        <input type="number" id="marketingFee" value="100">
+    </div>
+    <div class="form-group">
+        <label for="onboardingFee">Onboarding New Tenant Fee (€)</label>
+        <input type="number" id="onboardingFee" value="500">
+    </div>
+
+    <!-- Service Costs Block -->
+    <h2>Service Costs</h2>
+    <div class="form-group">
+        <label for="internetTvPhone">Internet, TV, Phone (Monthly) (€)</label>
+        <input type="number" id="internetTvPhone">
+    </div>
+    <div class="form-group">
+        <label for="utilities">Gas, Water, Electricity (Monthly) (€)</label>
+        <input type="number" id="utilities">
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <!-- Results -->
+    <div class="result">
+        <h2>Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Amount (€)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gross Revenue</td>
+                    <td id="grossRevenue"></td>
+                </tr>
+                <tr>
+                    <td>Total Financial Costs</td>
+                    <td id="totalFinancialCosts"></td>
+                </tr>
+                <tr>
+                    <td>Total Operating Costs</td>
+                    <td id="totalOperatingCosts"></td>
+                </tr>
+                <tr>
+                    <td>Total Service Costs</td>
+                    <td id="totalServiceCosts"></td>
+                </tr>
+                <tr>
+                    <td>Net Operating Income (NOI)</td>
+                    <td id="netOperatingIncome"></td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Net Operating Income (NOI)</td>
+                    <td id="summaryNOI"></td>
+                </tr>
+                <tr>
+                    <td>Return on Investment (ROI)</td>
+                    <td id="roi"></td>
+                </tr>
+                <tr>
+                    <td>Price Per Square Meter</td>
+                    <td id="pricePerSquareMeter"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    // Generic Info
+    const totalSquareMeters = parseFloat(document.getElementById('totalSquareMeters').value);
+    const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+    const averageAnnualNewTenants = parseFloat(document.getElementById('averageAnnualNewTenants').value);
+
+    // Income
+    const monthlyRent = parseFloat(document.getElementById('monthlyRent').value);
+    const annualUtilization = parseFloat(document.getElementById('annualUtilization').value) / 100;
+    const grossRevenue = 12 * monthlyRent * annualUtilization;
+
+    // Financial Expenses
+    const monthlyInsurance = parseFloat(document.getElementById('monthlyInsurance').value);
+    const mortgageRent = parseFloat(document.getElementById('mortgageRent').value);
+    const propertyTax = parseFloat(document.getElementById('propertyTax').value);
+    const municipalityTax = parseFloat(document.getElementById('municipalityTax').value);
+    const groundLease = parseFloat(document.getElementById('groundLease').value);
+    const totalFinancialCosts = (monthlyInsurance + mortgageRent + propertyTax + municipalityTax + groundLease) * 12;
+
+    // Operating Expenses
+    const maintenanceReservation = parseFloat(document.getElementById('maintenanceReservation').value);
+    const janitorHours = parseFloat(document.getElementById('janitorHours').value);
+    const janitorHourlyWage = parseFloat(document.getElementById('janitorHourlyWage').value);
+    const managementFee = parseFloat(document.getElementById('managementFee').value);
+    const marketingFee = parseFloat(document.getElementById('marketingFee').value);
+    const onboardingFee = parseFloat(document.getElementById('onboardingFee').value);
+    const totalOperatingCosts = maintenanceReservation + (janitorHours * janitorHourlyWage * 12) + managementFee + (marketingFee * averageAnnualNewTenants) + (onboardingFee * averageAnnualNewTenants);
+
+    // Service Costs
+    const internetTvPhone = parseFloat(document.getElementById('internetTvPhone').value);
+    const utilities = parseFloat(document.getElementById('utilities').value);
+    const totalServiceCosts = (internetTvPhone + utilities) * 12;
+
+    // Net Operating Income (NOI)
+    const netOperatingIncome = grossRevenue - totalFinancialCosts - totalOperatingCosts - totalServiceCosts;
+
+    // Summary Calculations
+    const roi = (netOperatingIncome / purchasePrice) * 100;
+    const pricePerSquareMeter = grossRevenue / totalSquareMeters;
+
+    // Display Results
+    document.getElementById('grossRevenue').innerText = grossRevenue.toFixed(2);
+    document.getElementById('totalFinancialCosts').innerText = totalFinancialCosts.toFixed(2);
+    document.getElementById('totalOperatingCosts').innerText = totalOperatingCosts.toFixed(2);
+    document.getElementById('totalServiceCosts').innerText = totalServiceCosts.toFixed(2);
+    document.getElementById('netOperatingIncome').innerText = netOperatingIncome.toFixed(2);
+
+    document.getElementById('summaryNOI').innerText = netOperatingIncome.toFixed(2);
+    document.getElementById('roi').innerText = roi.toFixed(2) + '%';
+    document.getElementById('pricePerSquareMeter').innerText = pricePerSquareMeter.toFixed(2);
+}
+</script>
+
+</body>
+</html>
