@@ -5,7 +5,11 @@ def compute_industry_benchmarks(database_path):
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
 
-    # Step 2: Fetch the latest stock history for each stock
+
+    # List of stock IDs to exclude, for example if a growth stock is listed in a conservative market, the R&D metric can become skewed. For these cases, this exlcude list should be used.
+    excluded_stock_ids = [2663]  
+
+# Prepare the SQL query with the exclusion condition        
     cursor.execute("""
         SELECT 
             sh.stockID, sh.date, sh.price, sh.operatingIncom, sh.icr, sh.currentRatio,
@@ -19,7 +23,8 @@ def compute_industry_benchmarks(database_path):
             GROUP BY stockID
         ) latest ON sh.stockID = latest.stockID AND sh.date = latest.latest_date
         JOIN Stocks s ON sh.stockID = s.id
-    """)
+        WHERE sh.stockID NOT IN ({})
+    """.format(','.join('?' * len(excluded_stock_ids))), tuple(excluded_stock_ids))
     latest_stock_data = cursor.fetchall()
 
     # Step 3: Organize data by industry for aggregation
