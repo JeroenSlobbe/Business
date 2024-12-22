@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 import time
 import cbsodata
 from ecbdata import ecbdata
+import yfinance as yf
 
 timestamp = date.today()
 
@@ -45,14 +46,70 @@ def getConsumerConfidence():
     print("Consumer confidence was:", consumerConfidence, "% for: ", last_entry['Perioden']   ,". Based on data from: ", info['ShortTitle'])
     return consumerConfidence   
     
-    
-    
+def getEURUSDExchangeRate():
+    ticker = "EURUSD=X"
+    data = yf.Ticker(ticker)
+    # Get the current exchange rate (latest close price)
+    exchange_rate = data.history(period="1d")['Close'].iloc[-1]
+    print("USD to EUR exchange rate:", exchange_rate, "e.g. 1 euro is: ", exchange_rate, " dollar, based on yahoofinance")
+    return exchange_rate
 
+def getGDPGrowth(): 
+    info = cbsodata.get_info('85880NED')
+    data = cbsodata.get_data('85880NED')
+    dataFiltered = []
+    gdpGrowth = ""
+    for x in data:
+        if x['SoortMutaties'] == 'Volume, t.o.v. zelfde periode vorig jaar':
+            dataFiltered.append(x)
+    last_entry = dataFiltered[-1]
+
+    gdpGrowth = last_entry['BbpGecorrigeerdVoorWerkdageneffecten_3']
+    print("GDP Growth:", gdpGrowth, "% for: ", last_entry['Perioden']   ,". Based on data from: ", info['Title'])
+    return gdpGrowth
+
+def getRetailSales():
+    info = cbsodata.get_info('83867NED')
+    data = cbsodata.get_data('83867NED')
+    last_entry = data[-1] 
+    retailSales = last_entry['OmzetontwikkelingTOVEenJaarEerder_2']
+    print("Retail sales compared to last year was:", retailSales, "% for: ", last_entry['Perioden']   ,". Based on data from: ", info['ShortTitle'])
+    return retailSales 
+
+def getProduction():
+    info = cbsodata.get_info('85806NED')
+    data = cbsodata.get_data('85806NED')
+    dataFiltered =[]
+    
+    for x in data:
+        if x['BedrijfstakkenBranchesSBI2008'] == 'C Industrie':
+            dataFiltered.append(x)
+    last_entry = dataFiltered[-1] 
+    production = last_entry['KalendergecorrigeerdeProductie_14']
+    print("Industrial production compared to last year was:", production, "% for: ", last_entry['Perioden']   ,". Based on data from: ", info['ShortTitle'])
+    return production 
+
+def getBankrupcies():
+    info = cbsodata.get_info('82242NED')
+    data = cbsodata.get_data('82242NED')
+    last_month_entry = data[-2]
+    last_entry = data[-1] 
+    last_month_bankrupcies = last_month_entry['UitgesprokenFaillissementen_1']
+    this_month_bankrupcies = last_entry['UitgesprokenFaillissementen_1']
+    bankrupcies = round((((this_month_bankrupcies - last_month_bankrupcies) / last_month_bankrupcies) *100),2)
+    print("NL bankrupcies:", bankrupcies, "% for: ", last_entry['Perioden']   ,". Based on data from: ", info['ShortTitle'])
+    return bankrupcies   
+    
 # Main program
 inflation = getInflation()
 unemployment = getUnemployment()
 consumerConfidence = getConsumerConfidence()
 ECBIR = getECBInterestRates()
+EUR_USD_ExchangeRate = getEURUSDExchangeRate()
+GDPGrowth = getGDPGrowth()
+NL_RetailSales = getRetailSales()
+NL_IndustrialProduction = getProduction()
+NL_Bankrupcies = getBankrupcies()
 
 # Store in Database
 
@@ -60,8 +117,9 @@ db_path = "ScreeningsDB.db"  # Replace with your SQLite database path
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
-insert_query = "INSERT INTO economyhistory (date, inflation, ECBInterest, NL_Unemployment, NL_ConsumerConfience)VALUES (?, ?, ?, ?, ?)"
-cursor.execute(insert_query, (timestamp, inflation, ECBIR, unemployment, consumerConfidence))
+insert_query = "INSERT INTO economyhistory (date, inflation, ECBInterest, NL_Unemployment, NL_ConsumerConfidence, EUR_USD_ExchangeRate,NL_GDPGrowth, NL_RetailSales, NL_IndustrialProduction,NL_Bankrupcies)VALUES (?, ?, ?, ?, ?,?,?,?,?,?)"
+cursor.execute(insert_query, (timestamp, inflation, ECBIR, unemployment, consumerConfidence, EUR_USD_ExchangeRate,GDPGrowth,NL_RetailSales,NL_IndustrialProduction,NL_Bankrupcies))
 conn.commit()
 print("Data successfully inserted into economyhistory.")
 conn.close()
+
