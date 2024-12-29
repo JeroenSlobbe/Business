@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Update Stock Data</h1>
+    <div>
+        <button id="start-update-button">Start Update</button>
+    </div>
+    <div class="content-box">
+        <h2>Progress Overview</h2>
+        <p id="progress-overview">No update started yet.</p>
+    </div>
+    <div class="content-box">
+        <h2>Errors</h2>
+        <div id="error-messages"></div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("start-update-button").addEventListener("click", function() {
+            fetch("http://127.0.0.1:5001/start-update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => {
+                if (response.status === 202) {
+                    pollStatus("http://127.0.0.1:5001/status");
+                    pollErrors("http://127.0.0.1:5001/errors");
+                } else {
+                    response.json().then(data => {
+                        document.getElementById("progress-overview").textContent = data.status;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("progress-overview").textContent = "Failed to start update. Please try again.";
+            });
+        });
+    });
+
+    function pollStatus(url) {
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("progress-overview").textContent = `Progress: ${data.completed}/${data.total} - ${data.status}`;
+            if (data.status !== "Completed") {
+                setTimeout(() => pollStatus(url), 2000);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("progress-overview").textContent = "Error retrieving progress.";
+        });
+    }
+
+    function pollErrors(url) {
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const errorMessagesDiv = document.getElementById("error-messages");
+            errorMessagesDiv.innerHTML = "";
+            if (data.length > 0) {
+                data.forEach(error => {
+                    const errorParagraph = document.createElement("p");
+                    errorParagraph.textContent = error;
+                    errorMessagesDiv.appendChild(errorParagraph);
+                });
+            }
+            setTimeout(() => pollErrors(url), 5000); // Poll for errors every 5 seconds
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+</script>
+{% endblock %}

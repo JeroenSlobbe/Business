@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-header">
+    <h2>Stock Evaluation</h2>
+</div>
+
+{% if ticker %}
+<!-- Basic Information Section -->
+<div class="basic-info-box">
+    {% if stock_data %}
+        <div class="basic-info">
+            <div><strong><i class="fas fa-hashtag"></i> Ticker:</strong> {{ stock_data["ticker"] }}</div>
+            <div><strong><i class="fas fa-calendar-alt"></i> Date Data Pulled:</strong> {{ stock_data["date"] }}</div>
+            <div><strong><i class="fas fa-building"></i> Name:</strong> {{ stock_data["stockname"] }}</div>
+            <div><strong><i class="fas fa-network-wired"></i> Sector:</strong> {{ stock_data["sector"] }}</div>
+        </div>
+        <div class="basic-info">
+            <div><strong><i class="fas fa-industry"></i> Industry:</strong> {{ stock_data["industry"] }}</div>
+            <div><strong><i class="fas fa-money-bill-wave"></i> Market:</strong> {{ stock_data["Exchange"] }}</div>
+            <div><strong><i class="fas fa-dollar-sign"></i> Price:</strong> {{ stock_data["currency"] }} {{ stock_data["price"] }}</div>
+            <div><strong><i class="fas fa-user"></i> Screening Profile:</strong> {{ profile["Type"] }}</div>
+        </div>
+    {% else %}
+        <p>No stock data available. Please provide a valid ticker.</p>
+    {% endif %}
+</div>
+
+<!-- Economic Data Colored Boxes -->
+<div class="colored-boxes">
+    {% for key, data in economic_data.items() %}
+        <div class="colored-box {{ data['color'] }}">
+            <div class="icon">
+                <i class="fas {{ data['icon'] }}"></i>
+            </div>
+            <div class="value">{{ data['value'] }}</div>
+            <div class="title">{{ key }}</div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Evaluation Block -->
+<div class="evaluation-block">
+    <h3>Does the company generate cash out of its operations?</h3>
+	<table class="evaluation-table">
+		<tbody>
+			<tr>
+				<td></td>
+				<td><strong>Last Operating Income:</strong></td>
+				<td>{{ stock_data['operatingIncome'] }} {{ stock_data['currency'] }} million</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td>{{ verdicts['percentageMakingProfitLastFiveYears']|safe }}</td>
+				<td><strong>Positive Operating Income Last 5 Years:</strong></td>
+				<td>{{ stock_data['percentageMakingProfitLastFiveYears'] }}%</td>
+				<td>
+					{% if benchmark_data['percentageMakingProfitLastFiveYears'] %}
+						<span style="color: gray;">Benchmark: {{ benchmark_data['percentageMakingProfitLastFiveYears'] }}%</span>
+					{% else %}
+						<span style="color: gray;">N/A</span>
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>{{ verdicts['percRandD']|safe }}</td>
+				<td><strong>R&D Expense:</strong></td>
+				<td>{{ stock_data['percRandD'] }}%</td>
+				<td>
+					{% if benchmark_data['percRandD'] %}
+						<span style="color: gray;">Benchmark: {{ benchmark_data['percRandD'] }}%</span>
+					{% else %}
+						<span style="color: gray;">N/A</span>
+					{% endif %}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div class="evaluation-block">
+    <h3>Can the company pay for its debts?</h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['icr']|safe }}</td>
+                <td><strong>Interest Coverage Ratio:</strong></td>
+                <td>{{ stock_data['icr'] }}</td>
+                <td>
+                    {% if benchmark_data['icr'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['icr'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['currentRatio']|safe }}</td>
+                <td><strong>Current Ratio:</strong></td>
+                <td>{{ stock_data['currentRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['currentRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['currentRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Evaluation Block 3 -->
+<div class="evaluation-block">
+    <h3>Is the value of the stock fair, given its risk?</h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['pbRatio']|safe }}</td>
+                <td><strong>P/B Ratio:</strong></td>
+                <td>{{ stock_data['pbRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['pbRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['pbRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['peRatio']|safe }}</td>
+                <td><strong>P/E Ratio:</strong></td>
+                <td>{{ stock_data['peRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['peRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['peRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['beta']|safe }}</td>
+                <td><strong>Beta:</strong></td>
+                <td>{{ stock_data['beta'] }}</td>
+                <td>
+                    {% if benchmark_data['beta'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['beta'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Evaluation Block 4 -->
+<div class="evaluation-block">
+    <h3>What are my expected earnings? <small>Note: Based on historic data, so no guarantees at all</small></h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['lastReturn']|safe }}</td>
+                <td><strong>Last Year Return:</strong></td>
+                <td>{{ stock_data['lastReturn'] }}%</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['fiveYearAvgReturn']|safe }}</td>
+                <td><strong>5-Year Average Return:</strong></td>
+                <td>{{ stock_data['fiveYearAvgReturn'] }}%</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['dividendYield']|safe }}</td>
+                <td><strong>Dividend Yield:</strong></td>
+                <td>{{ stock_data['dividendYield'] }}%</td>
+                <td>
+                    {% if benchmark_data['dividendYield'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['dividendYield'] }}%</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% else %}
+	<p>Please provide a ticker to evaluate.</p>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Search Profile</h1>
+
+<!-- Profile Dropdown -->
+<div>
+    <label for="profile-select"><strong>Select Profile:</strong></label>
+    <select id="profile-select">
+        {% for id, profile in profiles.items() %}
+            <option value="{{ id }}">{{ profile['Type'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- Ease Factor Control -->
+<div>
+    <label for="ease-factor"><strong>Ease Factor:</strong></label>
+    <button id="decrease-ease">-</button>
+    <input type="number" id="ease-factor" value="1" step="0.1" min="-5" max="5" readonly>
+    <button id="increase-ease">+</button>
+</div>
+
+<!-- Stocks Table -->
+<div id="stocks-container">
+    <!-- Table will be dynamically loaded here -->
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const easeInput = document.getElementById("ease-factor");
+        const profileSelect = document.getElementById("profile-select");
+        const stocksContainer = document.getElementById("stocks-container");
+
+        // Function to load stocks
+        const loadStocks = () => {
+            const profileId = profileSelect.value;
+            const easeFactor = parseFloat(easeInput.value);
+
+            fetch(`/stock-seeker/load-stocks/${profileId}/${easeFactor}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate the stocks table
+                    if (data.stocks.length > 0) {
+                        const table = `
+                            <table class="stocks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Stock Name</th>
+                                        <th>Industry</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${data.stocks.map(stock => `
+                                        <tr>
+                                            <td>
+                                                <a href="/stock-seeker/evaluate-stock/${stock.ticker}">${stock.ticker}</a>
+                                            </td>
+                                            <td>${stock.stockname}</td>
+                                            <td>${stock.industry}</td>
+                                        </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                        stocksContainer.innerHTML = table;
+                    } else {
+                        stocksContainer.innerHTML = "<p>No stocks meet the criteria.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading stocks:", error);
+                });
+        };
+
+        // Adjust ease factor and load stocks automatically
+        document.getElementById("increase-ease").addEventListener("click", () => {
+            const currentValue = parseFloat(easeInput.value);
+            if (currentValue < 5) {
+                easeInput.value = (currentValue + 0.1).toFixed(1);
+                loadStocks();
+            }
+        });
+
+        document.getElementById("decrease-ease").addEventListener("click", () => {
+            const currentValue = parseFloat(easeInput.value);
+            if (currentValue > -5) {
+                easeInput.value = (currentValue - 0.1).toFixed(1);
+                loadStocks();
+            }
+        });
+
+        // Reload stocks when profile changes
+        profileSelect.addEventListener("change", loadStocks);
+
+        // Initial load
+        loadStocks();
+    });
+</script>
+{% endblock %}

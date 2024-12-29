@@ -1,0 +1,192 @@
+/* General Layout */
+.content-box {
+    margin: 20px auto;
+    width: 80%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.styled-table th,
+.styled-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.styled-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.styled-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.styled-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Add Transaction Form */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;  /* Reduced gap between form elements */
+}
+
+#left-column, #right-column {
+    width: 48%;  /* Split the form into two columns */
+}
+
+#left-column .form-group, #right-column .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#left-column .form-group label, #right-column .form-group label {
+    width: 30%;
+    font-weight: bold;
+    margin-right: 10px;
+    text-align: left;
+}
+
+#left-column .form-group input, #right-column .form-group input,
+#left-column .form-group select, #right-column .form-group select {
+    width: 60%;  /* Adjusted to make inputs smaller */
+    padding: 6px;  /* Smaller padding */
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Adjust the width of Quantity input to match Currency input */
+#quantity, #currency {
+    width: 60%;  /* Both inputs now have the same width */
+}
+
+/* Adjusting the ticker input */
+#ticker {
+    width: 100%;  /* Let the ticker input span the full width */
+}
+
+/* Horizontal line below the Add Transaction title */
+#add-transaction h2 {
+    margin-bottom: 5px;  /* Reduced space below the title */
+}
+
+#add-transaction hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin-bottom: 20px; /* Adds space below the line */
+}
+
+/* Button Styling */
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Additional Style for Form Spacing */
+form .form-group {
+    flex-basis: 48%;  /* Make form fields take 48% width, leaving space in between */
+}
+
+/* Adjustments for Table Layout */
+.styled-table th, .styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table td {
+    font-size: 14px;
+}
+
+.styled-table th {
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Action Button Styling */
+button[type="submit"][onclick] {
+    background-color: #f44336;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"][onclick]:hover {
+    background-color: #d32f2f;
+}
+
+/* Summary Boxes for Portfolio Overview */
+.summary-boxes {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px auto;
+    width: 80%;
+}
+
+.summary-box {
+    flex: 1;
+    margin: 5px;
+    padding: 15px;
+    border-radius: 8px;
+    color: #fff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.summary-box.invested {
+    background-color: #4CAF50; /* Green */
+}
+
+.summary-box.portfolio-value {
+    background-color: #2196F3; /* Blue */
+}
+
+.summary-box.dividends-received {
+    background-color: #FFC107; /* Yellow */
+}
+
+.summary-box.total-return {
+    background-color: #FF5722; /* Orange */
+}
+
+.summary-box.avg-monthly-dividends {
+    background-color: #9C27B0; /* Purple */
+}
+
+.summary-box.annual-dividends {
+    background-color: #009688; /* Teal */
+}
+
+/* Table Adjustments */
+.styled-table {
+    margin-top: 20px;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 10px;
+    text-align: center;
+}
+

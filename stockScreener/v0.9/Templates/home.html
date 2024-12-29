@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Welcome to FIRE Portfolio Manager</h1>
+    <p>This is the main content area. Use the menu on the left to navigate through the application.</p>
+	
+	Some important considerations:
+	<ul>
+		<li>This application is <b>not</b> financial advise and for entertainment purposes only<li>
+		<li>The 3 sigma rule, for computing the industrial benchmark is applied (meaning outlyers 3 sigmas away from the average are not used for computing the benchmark)<li>
+		<li>Stock data is NOT real-time, when searching for a stock, you should refresh the portfolio data. </li>
+		<li>Please be gentle with refreshing the stock data, the script to pull everything from yahoo takes around 3 hours (to avoid API abuse rules). Let it finish before restarting</li>
+		<li>Only stocks on the NYSE, Amsterdam and Brussel are supported (mainly because I don't want to pay more connection fees)<li>
+		<li>If the dividend yield is not available, its calculated by dividing the lastDividendValue by the stock value</li>
+		<li>If this is also not available, it looks at the historic dividend payout, to calculate a payout ratio.</li>
+		<li>If Operating Income is not available (for example for most banking stocks), Net Income From Continuing And Discontinued Operation is used instead</li>
+		<li>If the current ratio couldn't be computed directly from the balance sheet, the proprietary yahoo statistic is used</li>
+	</ul>
+{% endblock %}

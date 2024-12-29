@@ -1,0 +1,9 @@
+pip install flask
+pip install cbsodata  
+pip install ecbdata
+pip install yfinance
+pip install celery
+pip install numpy
+pip install flask-cors
+
+# https://fontawesome.com/download

@@ -1,0 +1,33 @@
+<!-- templates/update-data/refresh_economic.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Refresh Industry benchmark</h1>
+    <div>
+        <button id="refresh-button">Refresh Data</button>
+        <p id="message"></p>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("refresh-button").addEventListener("click", function() {
+            fetch("/update-data/refresh-benchmark-data", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("message").textContent = data.message;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("message").textContent = "Failed to refresh data. Please try again.";
+            });
+        });
+    });
+</script>
+{% endblock %}

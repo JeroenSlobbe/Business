@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Colored Boxes for Portfolio Overview -->
+
+<div class="summary-boxes">
+    <div class="summary-box invested">Total Invested: &#8364;{{ total_invested | round(2) }}</div>
+    <div class="summary-box portfolio-value">Portfolio Value: &#8364;{{ portfolio_value | round(2) }}</div>
+    <div class="summary-box dividends-received">Total Dividends Received: &#8364;{{ total_dividends | round(2) }}</div>
+    <div class="summary-box total-return">Total Return: {{ total_return | round(2) }}%</div>
+    <div class="summary-box avg-monthly-dividends">Avg Monthly Dividends: &#8364;{{ avg_monthly_dividends | round(2) }}</div>
+    <div class="summary-box annual-dividends">Annual Dividends: &#8364;{{ annual_dividends | round(2) }}</div>
+</div>
+
+<!-- Stock Overview Table -->
+<div class="content-box">
+    <h2>Stock Overview</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Quantity</th>
+                <th>Full Name</th>
+                <th>Invested</th>
+                <th>Current Value</th>
+                <th>Dividends</th>
+                <th>Return</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in portfolio %}
+            <tr>
+                <td><a href="{{ url_for('evaluate_stock', ticker=stock.ticker) }}">{{ stock.ticker }}</a></td>
+                <td>{{ stock.quantity }}</td>
+                <td>{{ stock.full_name }}</td>
+                <td>{{ stock.invested | round(2) }}</td>
+                <td>{{ stock.current_value | round(2) }}</td>
+                <td>{{ stock.dividends | round(2) }}</td>
+                <td>{{ stock.return_percentage | round(2) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Dividend Expectations -->
+<div class="content-box">
+    <h2>Monthly Dividend Expectations</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Expected Dividends</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in dividend_expectations %}
+            <tr>
+                <td>{{ row }}</td>
+                <td>{{ dividend_expectations[row] | round(2) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="table-container">
+    <!-- Industries table (First table) -->
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Industry</th>
+                    <th>Stock Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for industry in industries %}
+                <tr onclick="fetchStocks({{ industry.industryID }})">
+                    <td>{{ industry.industryID }}</td>
+                    <td>{{ industry.yahooname }}</td>
+                    <td>{{ industry.stockCount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Stock table (Second table) will appear here -->
+    <div id="stock-table-container" class="table"></div>
+</div>
+{% endblock %}
