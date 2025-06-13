@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Configure Risk Profile</h1>
+
+<!-- Container for Flex Items -->
+<div class="content-box">
+    <h2>Update Profiles</h2>
+    {% for profile_id, profile in profiles.items() %}
+    <div class="profile-box" id="profile-box-{{ profile.Id }}">
+        <h3>{{ profile.Type }} (ID: {{ profile.Id }})</h3>
+        <form class="profile-form" data-profile-id="{{ profile.Id }}">
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric <i class="fas fa-chart-line"></i></th>
+                        <th>Lower Bound <i class="fas fa-arrow-down"></i></th>
+                        <th>Upper Bound <i class="fas fa-arrow-up"></i></th>
+                        <th>Direction <i class="fas fa-exchange-alt"></i></th>
+                        <th>Red-Flag <i class="fas fa-flag"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for metric, values in profile.items() %}
+                        {% if metric not in ['Id', 'Type'] %}
+                        <tr class="metric-row">
+                            <td>{{ metric }}</td>
+                            <td><input type="number" name="{{ metric }}_min" value="{{ values[0] }}" step="0.01"></td>
+                            <td><input type="number" name="{{ metric }}_max" value="{{ values[1] }}" step="0.01"></td>
+                            <td>
+                                <select name="{{ metric }}_direction">
+                                    <option value="U" {% if values[2] == 'U' %}selected{% endif %}>U</option>
+                                    <option value="D" {% if values[2] == 'D' %}selected{% endif %}>D</option>
+                                </select>
+                            </td>
+                            <td><input type="number" name="{{ metric }}_redflag" value="{{ values[3] }}" step="0.01"></td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" class="update-profile-btn">Update</button>
+			
+            {% if profile.Id != 1 %}
+            <button type="button" class="delete-profile-btn" data-profile-id="{{ profile.Id }}">Delete</button>
+            {%  endif %}
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="content-box">
+    <h2>New Profile</h2>
+    <form id="new-profile-form">
+        <div class="form-group">
+            <label for="profile_type">Profile Type:</label>
+            <input type="text" name="profile_type" id="profile_type" required>
+        </div>
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>Metric <i class="fas fa-chart-line"></i></th>
+                    <th>Lower Bound <i class="fas fa-arrow-down"></i></th>
+                    <th>Upper Bound <i class="fas fa-arrow-up"></i></th>
+                    <th>Direction <i class="fas fa-exchange-alt"></i></th>
+                    <th>Red-Flag <i class="fas fa-flag"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for metric in ['beta', 'peRatio', 'pbRatio', 'icr', 'currentRatio', 'dividendYield', 'percRandD', 'percentageMakingProfitLastFiveYears'] %}
+                <tr class="metric-row">
+                    <td>{{ metric }}</td>
+                    <td><input type="number" name="{{ metric }}_min" id="new_{{ metric }}_min" step="0.01" required></td>
+                    <td><input type="number" name="{{ metric }}_max" id="new_{{ metric }}_max" step="0.01" required></td>
+                    <td>
+                        <select name="{{ metric }}_direction" id="new_{{ metric }}_direction">
+                            <option value="U">U</option>
+                            <option value="D">D</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="{{ metric }}_redflag" id="new_{{ metric }}_redflag" step="0.01"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Add Profile</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // AJAX call for updating profiles
+    document.querySelectorAll(".update-profile-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            const form = this.closest(".profile-form");
+            const profileId = form.getAttribute("data-profile-id");
+            const formData = new FormData(form);
+            formData.append("profile_id", profileId);
+
+            fetch("/config/update-profile", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    });
+
+    // AJAX call for deleting profiles
+    document.querySelectorAll(".delete-profile-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            const profileId = this.getAttribute("data-profile-id");
+
+            fetch("/config/delete-profile", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ profile_id: profileId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Profile deleted') {
+                    document.getElementById(`profile-box-${profileId}`).style.display = 'none';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    });
+
+    // AJAX call for adding new profile
+    document.getElementById("new-profile-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch("/config/add-profile", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    });
+});
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,220 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+h1 {
+    font-size: 24px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Profile dropdown container */
+div {
+    margin-bottom: 20px;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Dropdown */
+select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 10px;
+    background-color: #fff;
+    color: #333;
+    outline: none;
+}
+
+select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Ease factor controls */
+button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+input[type="number"] {
+    width: 60px;
+    text-align: center;
+    font-size: 14px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 0 10px;
+}
+
+/* Load stocks button */
+#load-stocks {
+    display: block;
+    margin: 20px auto;
+    font-size: 16px;
+}
+
+/* Stocks table */
+.stocks-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+.stocks-table th, .stocks-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.stocks-table th {
+    background-color: #f4f4f4;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.stocks-table td a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.stocks-table td a:hover {
+    text-decoration: underline;
+}
+
+.stocks-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.stocks-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Flex container for new content boxes */
+.content-container {
+    display: flex;
+    gap: 20px;
+}
+
+.content-box {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Styles for the top 10 list */
+.top-10-list {
+    list-style-type: none; /* Remove default bullet points */
+    padding-left: 20px;
+    position: relative;
+}
+
+.top-10-list li {
+    margin-bottom: 10px;
+    padding-left: 25px; /* Ensure space for the icon */
+    position: relative; /* Position the icon correctly */
+}
+
+/* Blue links and icons for top 10 dividend yields */
+.dividend-yields .top-10-list a, .dividend-yields .list-icon, .dividend-yields-heading {
+    color: #007bff; /* Blue color for links, icons, and heading */
+}
+
+.dividend-yields .top-10-list a:hover {
+    text-decoration: underline;
+}
+
+/* Line below the heading in blue */
+.dividend-yields-line {
+    border: 1px solid #007bff;
+}
+
+/* Red links and icons for random stocks */
+.random-stocks .top-10-list a, .random-stocks .list-icon, .random-stocks-heading {
+    color: #dc3545; /* Red color for links, icons, and heading */
+}
+
+.random-stocks .top-10-list a:hover {
+    text-decoration: underline;
+    color: #c82333; /* Darker red on hover */
+}
+
+/* Line below the heading in red */
+.random-stocks-line {
+    border: 1px solid #dc3545;
+}
+
+/* Green links and icons for top 10 bargains */
+.bargains .top-10-list a, .bargains .list-icon, .bargains-heading {
+    color: #28a745; /* Green color for links, icons, and heading */
+}
+
+.bargains .top-10-list a:hover {
+    text-decoration: underline;
+    color: #218838; /* Darker green on hover */
+}
+
+/* Line below the heading in green */
+.bargains-line {
+    border: 1px solid #28a745;
+}
+
+.top-10-list a {
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.top-10-list .industry {
+    display: block; /* Force industry to be on a new line */
+    font-size: 14px;
+    color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    select, input[type="number"], button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .stocks-table th, .stocks-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .content-container {
+        flex-direction: column;
+    }
+}

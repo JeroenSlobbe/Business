@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Import tickers</h1>
+    <div class="content-box">
+        <div>
+            <label for="exchange-dropdown">Select Exchange:</label>
+            <select id="exchange-dropdown">
+                <option value="XBRU">XBRU</option>
+                <option value="XAMS">XAMS</option>
+                <option value="NYSE">NYSE</option>
+				<option value="ALL">ALL</option>
+            </select>
+            <button id="update-button">Update</button>
+        </div>
+    </div>
+    <div class="content-box">
+        <h2>Update message</h2>
+        <p id="progress-overview">No update started yet.</p>
+    </div>
+    <div class="content-box">
+        <h2>Result</h2>
+        <div id="error-messages"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("update-button").addEventListener("click", function() {
+                const selectedExchange = document.getElementById("exchange-dropdown").value;
+                fetch("/update-data/refresh-ticker-data", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ exchange: selectedExchange })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("progress-overview").textContent = data.status;
+                    const errorMessagesDiv = document.getElementById("error-messages");
+                    errorMessagesDiv.innerHTML = "";
+                    data.messages.forEach(error => {
+                        const errorItem = document.createElement("p");
+                        errorItem.textContent = error;
+                        errorMessagesDiv.appendChild(errorItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("progress-overview").textContent = "Failed to refresh data. Please try again.";
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,212 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F6F7FB; /* Light gray background for the app */
+}
+
+/* Top Bar */
+.top-bar {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 10px; 
+    background-color: #4099FF; /* Blue */
+    color: white;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for the top bar */
+}
+
+.left-section, .title, .form-container {
+    display: flex;
+    align-items: center;
+	margin-bottom: 0px;
+}
+
+.left-section {
+    flex: 1;
+}
+
+.data-freshness {
+	 font-size: 18px;
+}
+.title {
+    flex: 1;
+    text-align: center;
+    font-size: 25px;
+}
+
+.form-container {
+    flex: 1;
+    justify-content: flex-end; /* Aligns the form to the right */
+}
+
+.home-icon {
+    color: #fff;        /* White color for the icon */
+    font-size: 18px;    /* Size of the icon */
+    text-decoration: none; /* Remove underline from link */
+    margin-left: 10px;  /* Add some margin to the left */
+	margin-right:10px;
+}
+
+.home-icon:hover {
+    color: #4CAF50;  /* Change color on hover */
+}
+
+.title {
+    flex-grow: 1;
+    text-align: center;
+    color: #fff;        /* White color for the text */
+    font-size: 25px;    /* Font size for the text */
+}
+
+.top-bar h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap; /* Ensure the search form items do not wrap */
+}
+
+.search-form input[type="text"] {
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-form button#search-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    margin-left: 5px; /* Ensure the button is next to the input field */
+}
+
+.search-form button#search-button i {
+    font-size: 20px;
+    color: white;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    flex-direction: row; /* Aligns the menu and content side-by-side */
+    height: 100vh; /* Full viewport height */
+}
+
+/* Menu */
+.menu {
+    width: 250px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Light shadow on the right of the menu */
+    box-sizing: border-box;
+    height: 100vh; /* Full height */
+    overflow-y: auto; /* Scrollable menu */
+}
+
+.menu h2 {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: black;
+    text-transform: uppercase;
+}
+
+.menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu ul li {
+    margin-bottom: 10px;
+}
+
+.menu ul li a {
+    text-decoration: none;
+    color: #666679;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.menu ul li a i {
+    margin-right: 10px; /* Add space between icon and text */
+}
+
+.menu ul li a:hover {
+    color: #4099FF;
+}
+
+/* Content */
+.content {
+    flex: 1; /* Take up the remaining space */
+    padding: 25px;
+    background-color: #F6F7FB; /* Light gray background */
+    box-sizing: border-box;
+    overflow: auto; /* Ensure scrollable content if necessary */
+}
+
+/* Content Container */
+.content-container {
+    display: flex; /* Use flexbox to arrange child elements side-by-side */
+    gap: 20px; /* Add space between the two divs/boxes */
+    background-color: #F6F7FB; /* Light gray background for the container */
+}
+
+/* Content Box */
+.content-box {
+    flex: 1; /* Ensure both boxes take equal width */
+    background-color: #FFFFFF; /* White background for the box */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for aesthetics */
+    padding: 20px;
+    overflow: hidden;
+    display: flex; /* Enable flexbox properties inside the box */
+    flex-direction: column; /* Align children vertically */
+}
+
+/* Tables */
+.table {
+    flex: 1; /* Ensure the table takes up the remaining space inside the content box */
+    display: flex; /* Enable flexbox inside the table container */
+    flex-direction: column; /* Align table elements vertically */
+}
+
+.table table {
+    width: 100%; /* Ensure the table takes up the full width of the container */
+    flex-grow: 1; /* Allow the table to grow and take up available space */
+    border-collapse: collapse; /* Remove gaps between table cells */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: block;
+    table-layout: fixed; /* Ensures table does not shrink beyond a set width */
+    word-wrap: break-word; /* Break long words into multiple lines */
+}
+
+.table table th,
+.table table td {
+    padding: 10px;
+    border: 1px solid #ddd; /* Light border for table cells */
+    text-align: left;
+}
+
+.table table th {
+    background-color: #f4f4f4; /* Light gray background for headers */
+    font-weight: bold;
+}
+
+.table table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row background for clarity */
+}
+
+.table table tr.selected {
+    background-color: #d3e9ff; /* Light blue background to indicate selection */
+}

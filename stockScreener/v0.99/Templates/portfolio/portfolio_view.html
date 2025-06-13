@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="basic-info-box">
+
+        <div class="basic-info">
+            <div><strong><i class="fa-solid fa-seedling" style="color: #228B22;"></i> Total invested: </strong>&#8364; {{ "{:,.2f}".format(pstatistics[0].total_invested | round(2)) }} </div>
+            <div><strong><i class="fa-solid fa-sack-dollar" style="color: #A0522D;"></i> Portfolio Value: </strong>&#8364; {{ "{:,.2f}".format(pstatistics[0].portfolio_value | round(2)) }} </div>
+			<div><strong><i class="fa-solid fa-trash" style="color: #008080;"></i> Total fees paid: </strong>&#8364; {{ pstatistics[0].total_fees | round(2) }}</div>
+        </div>
+        <div class="basic-info">
+			{% set color = '#4CAF50' if pstatistics[0].total_return > 0 else '#F44336' %}
+            <div><strong><i class="fas fa-rocket" style="color: {{ color }};"></i> Total return:</strong> {{ pstatistics[0].total_return | round(2) }}% </div>
+            <div><strong><i class="fa-solid fa-piggy-bank" style="color: #2196F3;"></i> Total dividends:</strong> &#8364; {{ pstatistics[0].total_dividends | round(2) }} </div>
+        </div>
+        <div class="basic-info">
+            <div><strong><i class="fas fa-fire" style="color: #FFC066;"></i> Avg Monthly Dividends: </strong>&#8364; {{ avg_monthly_dividends | round(2) }}</div>
+            <div><strong><i class="fa-solid fa-landmark" style="color: #4EDEC1;"></i> Annual dividends: </strong>&#8364; {{ "{:,.2f}".format(annual_dividends | round(2)) }}</div>
+        </div>
+</div>
+
+<!-- Stock Overview Table -->
+<div class="basic-info-box">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Quantity</th>
+                <th>Full Name</th>
+                <th>Invested (&#8364;)</th>
+                <th>Current Value (&#8364;)</th>
+                <th>Dividends (&#8364;)</th>
+                <th>Return (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in portfolio %}
+            <tr>
+                <td><a href="{{ url_for('evaluate_stock', ticker=stock.ticker) }}">{{ stock.ticker }}</a></td>
+                <td>{{ stock.quantity }}</td>
+                <td>{{ stock.full_name }}</td>
+                <td>&#8364; {{ stock.invested | round(2) }}</td>
+                <td>&#8364; {{ stock.current_value | round(2) }}</td>
+                <td>&#8364; {{ stock.dividends | round(2) }}</td>
+                <td>
+                {% if stock.return_percentage >= 0 %}
+                <span style="color: green;">
+                    <i class="fas fa-arrow-up"></i>&nbsp;&nbsp;  {{ stock.return_percentage | round(2) }} %
+                </span>
+                {% else %}
+                <span style="color: red;">
+                    <i class="fas fa-arrow-down"></i>&nbsp;&nbsp;  {{ stock.return_percentage | round(2) }} %
+                </span>
+                {% endif %}
+            </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<!-- portfolio statistics -->
+<div class="basic-info-box" style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; ">
+    <!-- Currency Diversification -->
+    <div style="flex-shrink: 0; width: 100%; display: flex; align-items: center; gap: 0px; white-space: nowrap;">
+        <div style="width: 220px; height:10px">
+			<strong>
+				<i class="fa-solid fa-dollar-sign" style="color: #FFD700; margin-right: 8px;"></i>
+				Currency diversification:&nbsp;
+			</strong>
+		</div>
+		<div style="margin-bottom:0px;">
+			<canvas id="currencyExposureChart" style="width: 400px; max-height: 30px;"></canvas>
+		</div>
+    </div>
+
+    <!-- Asset Diversification -->
+    <div style="flex-shrink: 0; width: 100%; display: flex; align-items: center; gap: 0px; white-space: nowrap;">
+		<div style="width: 220px; ">
+			<strong>
+				<i class="fa-solid fa-chess-rook" style="color: #5E99D6; margin-right: 8px;"></i>
+				Asset diversification:&nbsp;
+			</strong>
+		</div>
+		<div style="margin-bottom:8px;">
+			<canvas id="assetExposureChart" style="width: 400px; max-height: 30px;"></canvas>
+		</div>
+    </div>  
+</div>
+
+
+
+<!-- Container for Flex Items -->
+<div class="content-container">
+    <!-- Dividend Expectations -->
+    <div class="content-box-left" style="flex: 1;">
+        <center><h2>Monthly Dividend Expectations</h2></center>
+        <canvas id="dividendChart"></canvas>
+    </div>
+
+    <!-- Industry Pie Chart -->
+    <div class="content-box-right" style="flex: 1;">
+		<center><h2>Diversification by industry</h2></center>
+		<div class="chart-container">
+			<canvas id="industryPieChart"></canvas>
+		</div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // The portfolio_data is passed from the Flask backend
+        const portfolioData = {{ portfolio | tojson }};
+        const industries = {};
+
+        portfolioData.forEach(stock => {
+            const industry = stock.industry;
+            const currentValue = stock.current_value;
+            if (industries[industry]) {
+                industries[industry] += currentValue;
+            } else {
+                industries[industry] = currentValue;
+            }
+        });
+
+        const labels = Object.keys(industries);
+        const values = Object.values(industries);
+
+        const ctx = document.getElementById('industryPieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie', // Keep it as pie
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Current Value by Industry',
+                    data: values,
+                    backgroundColor: [
+						'#4CAF50',  // Green
+						'#388E3C',  // Dark Green
+						'#81C784',  // Light Green
+						'#2196F3',  // Blue
+						'#1976D2',  // Dark Blue
+						'#64B5F6',  // Light Blue
+						'#FFC107',  // Yellow
+						'#FFEB3B',  // Light Yellow
+						'#FBC02D',  // Gold
+						'#F44336',  // Orange
+						'#E57373',  // Light Red
+						'#D32F2F',  // Dark Red
+						'#9C27B0',  // Purple
+						'#673AB7',  // Deep Purple
+						'#BA68C8',  // Light Purple
+						'#009688',  // Teal
+						'#00796B',  // Deep Teal
+						'#4DB6AC',  // Light Teal
+						'#FFC0CB',  // Pink
+						'#E91E63',  // Hot Pink
+						'#F48FB1',  // Soft Pink
+						'#795548',  // Brown
+						'#8D6E63',  // Light Brown
+						'#607D8B',  // Gray Blue
+						'#BDBDBD'   // Silver Gray
+                    ],
+                    borderColor: [
+						'#4CAF50',  // Green
+						'#388E3C',  // Dark Green
+						'#81C784',  // Light Green
+						'#2196F3',  // Blue
+						'#1976D2',  // Dark Blue
+						'#64B5F6',  // Light Blue
+						'#FFC107',  // Yellow
+						'#FFEB3B',  // Light Yellow
+						'#FBC02D',  // Gold
+						'#F44336',  // Orange
+						'#E57373',  // Light Red
+						'#D32F2F',  // Dark Red
+						'#9C27B0',  // Purple
+						'#673AB7',  // Deep Purple
+						'#BA68C8',  // Light Purple
+						'#009688',  // Teal
+						'#00796B',  // Deep Teal
+						'#4DB6AC',  // Light Teal
+						'#FFC0CB',  // Pink
+						'#E91E63',  // Hot Pink
+						'#F48FB1',  // Soft Pink
+						'#795548',  // Brown
+						'#8D6E63',  // Light Brown
+						'#607D8B',  // Gray Blue
+						'#BDBDBD'   // Silver Gray
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: false,
+                        text: 'Portfolio Distribution by Industry'
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const dataset = context.chart.data.datasets[0].data;
+                            const total = dataset.reduce((sum, val) => sum + val, 0);
+                            const percentage = ((value / total) * 100).toFixed(1); // One decimal place
+                            return `${percentage}%`;
+                        },
+                        color: '#fff', // Label text color
+                        font: {
+                            weight: 'bold',
+                        }
+                    }
+                },
+                cutout: '50%' // Makes it a donut!
+            },
+            plugins: [ChartDataLabels]
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('dividendChart').getContext('2d');
+
+        // Define the correct month order
+        const months = ["January", "February", "March", "April", "May", "June", 
+                        "July", "August", "September", "October", "November", "December"];
+        
+        // Get data from Flask template and ensure the values are in the correct order
+        const dividendExpectations = {{ dividend_expectations | tojson }};
+        const values = months.map(month => dividendExpectations[month] || 0);
+        const data = {
+            labels: months,
+            datasets: [{
+                label: 'Expected Dividends',
+                data: values,
+                backgroundColor: 'rgba(144, 238, 144, 0.2)',
+                borderColor: 'rgba(144, 238, 144, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw.toFixed(2);
+                            }
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        formatter: (value) => {
+                            return value.toFixed(2);
+                        },
+                        color: 'black',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+						suggestedMax: Math.max(...values) * 1.1,
+                        title: {
+                            display: true,
+                            text: 'Expected Dividends'
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        };
+
+        const dividendChart = new Chart(ctx, config);
+    });
+</script>
+<script>
+    // Asset Exposure Chart
+    const assetCtx = document.getElementById('assetExposureChart').getContext('2d');
+
+    const assetData = {
+        labels: [''], // Empty label for simplicity
+        datasets: [
+            {% for item in pstatistics[0].assetExposure %}
+            {
+                label: '{{ item.assetType }}',
+                data: [{{ (item.exposure * 100) | round(1) }}], // Data points
+                backgroundColor: '{{ ['#FFC107', '#FF5722','#4CAF50', '#2196F3'][loop.index0 % 4] }}', // Rotate colors
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    const assetConfig = {
+        type: 'bar',
+        data: assetData,
+        options: {
+            indexAxis: 'y', // Horizontal bar chart
+            responsive: true,
+            maintainAspectRatio: false, // Allow custom sizing
+            plugins: {
+                legend: {
+                    display: false // No legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.dataset.label}: ${context.raw}%`
+                    }
+                },
+                datalabels: { // Configure labels inside bars
+                    anchor: 'center',
+                    align: 'center',
+                    color: 'white', // Ensure labels are readable
+                    formatter: (value, context) => `${context.dataset.label} ${value}%` // Custom label format
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: {
+                        display: false // Completely remove grid lines
+                    },
+                    ticks: {
+                        display: false // Completely remove tick marks and labels
+                    }
+                },
+                y: {
+                    stacked: true,
+                    grid: {
+                        display: false // Completely remove grid lines
+                    },
+                    ticks: {
+                        display: false // Completely remove tick marks and labels
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels] // Add the datalabels plugin
+    };
+
+    new Chart(assetCtx, assetConfig);
+
+    // Currency Exposure Chart
+    const currencyCtx = document.getElementById('currencyExposureChart').getContext('2d');
+
+    const currencyData = {
+        labels: [''], // Empty label for simplicity
+        datasets: [
+            {% for item in pstatistics[0].currencyExposure %}
+            {
+                label: '{{ item.currency }}',
+                data: [{{ (item.exposure * 100) | round(1) }}], // Data points
+                backgroundColor: '{{ ['#4CAF50', '#2196F3','#FFC107', '#FF5722'][loop.index0 % 4] }}', // Rotate colors
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    const currencyConfig = {
+        type: 'bar',
+        data: currencyData,
+        options: {
+            indexAxis: 'y', // Horizontal bar chart
+            responsive: true,
+            maintainAspectRatio: false, // Allow custom sizing
+            plugins: {
+                legend: {
+                    display: false // No legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.dataset.label}: ${context.raw}%`
+                    }
+                },
+                datalabels: { // Add labels inside bars
+                    anchor: 'center',
+                    align: 'center',
+                    color: 'white', // Ensure labels are readable
+                    formatter: (value, context) => `${context.dataset.label} ${value}%` // Custom label format
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: {
+                        display: false // Completely remove grid lines
+                    },
+                    ticks: {
+                        display: false // Completely remove tick marks and labels
+                    }
+                },
+                y: {
+                    stacked: true,
+                    grid: {
+                        display: false // Completely remove grid lines
+                    },
+                    ticks: {
+                        display: false // Completely remove tick marks and labels
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels] // Add the datalabels plugin
+    };
+
+    new Chart(currencyCtx, currencyConfig);
+</script>
+
+{% endblock %}

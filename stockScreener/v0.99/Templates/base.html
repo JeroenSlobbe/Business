@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/page.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/fire.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/eval.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profileconfig.css') }}">
+	<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/chart-datalabels.js') }}"></script>
+
+</head>
+<body>
+    <div class="top-bar">
+        <div class="left-section">
+            <a href="/" class="home-icon"><i class="fas fa-home"></i> Home</a>
+            <span class="data-freshness"><i class="fas fa-database"></i> {{ latest_date }}</span>
+        </div>
+        <div class="title">Portfolio Manager</div>
+		<div class="form-container">
+			<form id="search-form" class="search-form">
+				<input type="text" id="search-input" placeholder="Search...">
+				<button id="search-button" type="submit"><i class="fas fa-search"></i></button>
+			</form>
+		</div>
+    </div>
+    <div class="layout">
+        <div class="menu">
+            <h2>Portfolio</h2>
+            <ul>
+                <li>
+                    <a href="/portfolio/view-portfolio"><i class="fas fa-chart-line"></i> View</a>
+				</li>
+				<li>
+					<a href="/portfolio/fire"><i class="fas fa-fire"></i> Manage dividends</a>
+                </li>
+				<li>
+					<a href="/portfolio/transactions"><i class="fas fa-gear"></i> Manage transactions</a>
+                </li>
+            </ul>
+            <h2>Stock Seeker</h2>
+            <ul>
+			    <li>
+                    <a href="/stock-seeker/search-profile"><i class="fas fa-search"></i>Search by profile</a>
+                </li>
+
+				<li>
+                    <a href="/stock-seeker/view-industries"><i class="fas fa-industry"></i> View Industries</a>
+                </li>
+            </ul>
+			<h2>Application configuration</h2>
+            <ul>
+                <li>
+                    <a href="/config/profile"><i class="fas fa-gear"></i> Configure risk profile</a>
+                </li>
+            </ul>
+            <h2>Data Management</h2>
+            <ul>
+                <li>
+                    <a href="/update-data/refresh-economic-data"><i class="fas fa-sync-alt"></i> Refresh Economic Data</a>
+                </li>
+                <li>
+                    <a href="/update-data/refresh-stock"><i class="fas fa-chart-bar"></i> Refresh Stock Data</a>
+                </li>
+                <li>
+                    <a href="/update-data/refresh-industry-benchmark"><i class="fas fa-industry"></i> Refresh Industry Benchmark</a>
+                </li>
+				<li>
+                    <a href="/update-data/import-tickers"><i class="fas fa-download"></i> Import tickers</a>
+                </li>
+				<li>
+                    <a href="/update-data/bonds"><i class="fas fa-file-invoice"></i> Import bond</a>
+                </li>
+				<li>
+                    <a href="/update-data/etfs"><i class="fas fa-file-invoice"></i> Import ETF</a>
+                </li>
+				<li>
+                    <a href="/update-data/remote-data"><i class="fas fa-trash"></i>Clean data</a>
+                </li>
+            </ul>
+        </div>
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    {% block scripts %}
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var searchForm = document.getElementById('search-form');
+			var searchInput = document.getElementById('search-input');
+
+			searchForm.addEventListener('submit', function(event) {
+				event.preventDefault(); // Prevent the form from submitting immediately
+				var searchTerm = searchInput.value;
+				if (searchTerm) {
+					var actionUrl = `/stock-seeker/evaluate-stock/${searchTerm}`;
+					searchForm.action = actionUrl;
+					searchForm.submit(); // Now submit the form with the updated action URL
+				}
+			});
+		});
+	</script>
+	{% endblock %}
+</body>
+</html>

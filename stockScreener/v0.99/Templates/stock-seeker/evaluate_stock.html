@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if ticker %}
+<!-- Basic Information Section -->
+<div class="basic-info-box" {% if historicView != 0 %} style="background-color: #FAEBD7" {% endif %}>
+    {% if stock_data %}
+        <div class="basic-info">
+            <div><strong><i class="fas fa-hashtag"></i> Ticker:</strong> {{ stock_data["ticker"] }}</div>
+            <div><strong><i class="fas fa-calendar-alt"></i> Date Data Pulled:</strong> {{ stock_data["date"] }}</div>
+            <div><strong><i class="fas fa-building"></i> Name:</strong> {{ stock_data["stockname"] }}</div>
+            <div><strong><i class="fas fa-network-wired"></i> Sector:</strong> {{ stock_data["sector"] }}</div>
+        </div>
+        <div class="basic-info">
+            <div><strong><i class="fas fa-industry"></i> Industry:</strong> {{ stock_data["industry"] }}</div>
+            <div><strong><i class="fas fa-money-bill-wave"></i> Market:</strong> {{ stock_data["Exchange"] }}</div>
+            <div><strong><i class="fas fa-dollar-sign"></i> Price:</strong> {{ stock_data["currency"] }} {{ stock_data["price"] }}</div>
+            <div><strong><i class="fas fa-user"></i> Screening Profile:</strong> {{ profile["Type"] }}</div>
+        </div>
+		 <div class="basic-info">
+            <div><strong><i class="fas fa-eye"></i> On Watchlist:</strong> 
+                <label class="switch">
+                    <input type="checkbox" class="watchlist-toggle" data-id="{{ stock_data['id'] }}" {% if stock_data['isWatchlist'] %} checked {% endif %}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+			{% if stock_data['ownedShares'] > 0 %}
+			<div><strong><i class="fas fa-history"></i> Historic view: </strong>
+				<label class="switch">
+					<input type="checkbox" class="history-toggle" data-id="{{ stock_data['id'] }}" {% if historicView != 0 %} checked {% endif %}>
+					<span class="slider round"></span>
+				</label>
+			</div>
+			{% endif %}
+        </div>
+    {% else %}
+        <p>No stock data available. Please provide a valid ticker.</p>
+    {% endif %}
+</div>
+
+<!-- Economic Data Colored Boxes -->
+<div class="colored-boxes">
+    {% for key, data in economic_data.items() %}
+        <div class="colored-box {{ data['color'] }}">
+            <div class="icon">
+                <i class="fas {{ data['icon'] }}"></i>
+            </div>
+            <div class="value">{{ data['value'] }}</div>
+            <div class="title">{{ key }}</div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Evaluation Block -->
+<div class="evaluation-block" {% if historicView != 0 %} style="background-color: #FAEBD7" {% endif %}>
+    <h3>Does the company generate cash out of its operations?</h3>
+	<table class="evaluation-table">
+		<tbody>
+			<tr>
+				<td></td>
+				<td><strong>Last Operating Income:</strong></td>
+				<td>{{ stock_data['operatingIncome'] }} {{ stock_data['currency'] }} million</td>
+				<td>-</td>
+			</tr>
+			<tr>
+				<td>{{ verdicts['percentageMakingProfitLastFiveYears']|safe }}</td>
+				<td><strong>Positive Operating Income Last 5 Years:</strong></td>
+				<td>{{ stock_data['percentageMakingProfitLastFiveYears'] }}%</td>
+				<td>
+					{% if benchmark_data['percentageMakingProfitLastFiveYears'] %}
+						<span style="color: gray;">Benchmark: {{ benchmark_data['percentageMakingProfitLastFiveYears'] }}%</span>
+					{% else %}
+						<span style="color: gray;">N/A</span>
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>{{ verdicts['percRandD']|safe }}</td>
+				<td><strong>R&D Expense:</strong></td>
+				<td>{{ stock_data['percRandD'] }}%</td>
+				<td>
+					{% if benchmark_data['percRandD'] %}
+						<span style="color: gray;">Benchmark: {{ benchmark_data['percRandD'] }}%</span>
+					{% else %}
+						<span style="color: gray;">N/A</span>
+					{% endif %}
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div class="evaluation-block" {% if historicView != 0 %} style="background-color: #FAEBD7" {% endif %}>
+    <h3>Can the company pay for its debts?</h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['icr']|safe }}</td>
+                <td><strong>Interest Coverage Ratio:</strong></td>
+                <td>{{ stock_data['icr'] }}</td>
+                <td>
+                    {% if benchmark_data['icr'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['icr'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['currentRatio']|safe }}</td>
+                <td><strong>Current Ratio:</strong></td>
+                <td>{{ stock_data['currentRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['currentRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['currentRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Evaluation Block 3 -->
+<div class="evaluation-block" {% if historicView != 0 %} style="background-color: #FAEBD7" {% endif %}>
+    <h3>Is the value of the stock fair, given its risk?</h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['pbRatio']|safe }}</td>
+                <td><strong>P/B Ratio:</strong></td>
+                <td>{{ stock_data['pbRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['pbRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['pbRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['peRatio']|safe }}</td>
+                <td><strong>P/E Ratio:</strong></td>
+                <td>{{ stock_data['peRatio'] }}</td>
+                <td>
+                    {% if benchmark_data['peRatio'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['peRatio'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['beta']|safe }}</td>
+                <td><strong>Beta:</strong></td>
+                <td>{{ stock_data['beta'] }}</td>
+                <td>
+                    {% if benchmark_data['beta'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['beta'] }}</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Evaluation Block 4 -->
+<div class="evaluation-block" {% if historicView != 0 %} style="background-color: #FAEBD7" {% endif %}>
+    <h3>What are my expected earnings? <small>Note: Based on historic data, so no guarantees at all</small></h3>
+    <table class="evaluation-table">
+        <tbody>
+            <tr>
+                <td>{{ verdicts['lastReturn']|safe }}</td>
+                <td><strong>Last Year Return:</strong></td>
+                <td>{{ stock_data['lastReturn'] }}%</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['fiveYearAvgReturn']|safe }}</td>
+                <td><strong>5-Year Average Return:</strong></td>
+                <td>{{ stock_data['fiveYearAvgReturn'] }}%</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td>{{ verdicts['dividendYield']|safe }}</td>
+                <td><strong>Dividend Yield:</strong></td>
+                <td>{{ stock_data['dividendYield'] }}%</td>
+                <td>
+                    {% if benchmark_data['dividendYield'] %}
+                        <span style="color: gray;">Benchmark: {{ benchmark_data['dividendYield'] }}%</span>
+                    {% else %}
+                        <span style="color: gray;">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Evaluation Block 5 -->
+<div class="evaluation-block">
+	<div class="strategic-evaluation">
+		<h3>Strategic evaluation</small></h3>
+		<div class="evaluation-content">
+			<div class="evaluation-left">
+				<textarea id="strategicEvaluation" rows="10" cols="50" placeholder="Write your notes here...">{{ stock_data['strategicEvaluation'] }}</textarea>
+				<button id="saveEvaluation" class="save-button">Save</button>
+			</div>
+			<div class="evaluation-right">
+				<label>Please add your strategic evaluation notes in here. How do you see this company in the future? Do you like all its products, can you name them? Are there trends that render them obsolete? What is the economic moat of the product. Or if you like a bit of a strategic framework, consider analysing Porter's five forces: 
+				<ol>
+					<li>How competitive is the market, who is the competition?</li>
+					<li>How easy is it for a new entrant to enter the market? Do you need big investments to start-up, or a rare government license?</li>
+					<li>Does the company have supplier power? E.g. can you easily switch suppliers or are there huge switching costs?</li>
+					<li>Customer power, can you dictate the prices, and is the revenue model recurring? What is the price elasticity of the product sold?</li>
+					<li>Threat of substitutes and disruptions? Can the industry be easily disrupted by innovation, or can a complete new product wipe out the demand (think digital camera versus photo camera)?</li>
+				</ol>
+				</label>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% else %}
+	<p>Please provide a ticker to evaluate.</p>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const switches = document.querySelectorAll('.watchlist-toggle');
+
+    switches.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const ticker = "{{ stock_data['ticker'] }}";
+            const isWatchlist = this.checked ? 1 : 0;
+
+            fetch('/update_watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ticker: ticker,
+                    isWatchlist: isWatchlist,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const saveButton = document.getElementById('saveEvaluation');
+
+    saveButton.addEventListener('click', function() {
+        const ticker = "{{ stock_data['ticker'] }}";
+        const strategicEvaluation = document.getElementById('strategicEvaluation').value;
+
+        fetch('/update_strategic_evaluation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ticker: ticker,
+                strategicEvaluation: strategicEvaluation,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Strategic evaluation notes saved successfully.');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the notes.');
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const historyToggle = document.querySelector('.history-toggle');
+
+    historyToggle.addEventListener('change', function() {
+        const isHistoricView = this.checked ? 1 : 0; // Get the toggle state
+        const currentUrl = window.location.href; // Get the current URL
+
+        // Remove trailing `/1` or `/0` if they exist
+        let baseUrl = currentUrl.replace(/\/[01]$/, '');
+
+        // Append `/1` or `/0` based on the toggle state
+        const newUrl = `${baseUrl}/${isHistoricView}`;
+
+        // Navigate to the new URL
+        window.location.href = newUrl;
+    });
+});
+</script>
+{% endblock %}
