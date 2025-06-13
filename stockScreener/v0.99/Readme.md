@@ -1,41 +1,51 @@
-= Engineering imrpovements
-	[x] remove db from logic.py and create seperate database handler
-	[x] add datalayer, so other sources can be more easily added
-		[x] Improve securityFilter, error:
-			[x] Security violation INSERT INTO stockhistory (stockID,date,price,operatingIncom, percentageMakingProfitLastFiveYears, icr, currentRatio,pbratio, peratio,beta,lastReturn,fiveYearAverageReturn,dividentYield,RandDExpense,currency, revenue)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); on:  5 out of:  [146, datetime.date(2025, 1, 24), 42.9, 1172000000.0, 80, nan, 45.214, 0.56, 10.12, 0.733, 23.11, 18.01, 10.42, 0, 'EUR', 10974000000.0]
-			[x] Security violation INSERT INTO stockhistory (stockID,date,price,operatingIncom, percentageMakingProfitLastFiveYears, icr, currentRatio,pbratio, peratio,beta,lastReturn,fiveYearAverageReturn,dividentYield,RandDExpense,currency, revenue)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); on:  12 out of:  [272, datetime.date(2025, 2, 15), 0, 0, 0, 0, None, 0, 0, 0, -0.68, 0.64, inf, 0, 'USD', 0]
-			[x] Security violation INSERT INTO stockhistory (stockID,date,price,operatingIncom, percentageMakingProfitLastFiveYears, icr, currentRatio,pbratio, peratio,beta,lastReturn,fiveYearAverageReturn,dividentYield,RandDExpense,currency, revenue)VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); on:  12 out of:  [3174, datetime.date(2025, 2, 22), 75.58, 0, 0, 0, None, 0, 0, 0, 20.97, 11.51, 2.134257601779355e-05, 0, 'USD', 0]
-	[x] fix bug (BWSN view)
-	[x] Configuration file
-	[x] add database index to remove performance issues when loading stocks by profile
-	[x] update yfinance libary to get rid of the block
-	[x] add token refresh for stock refresher each hour
-	[x] fix dividend table padding
-	[x] fix percentages
-	[x] fix status = special/active
-	[x] fix insert stock, assetType='stock' or 'bond'
-	[x] See if multiple stock queries bypasses rate limit and if so implement major timing improvement
-		-> explored option, but download only works for stock value, not the statistics I would like to analyse
-	[x] fix that bonds are also updated (but regularMarketPrice as price only)
-	[x] add token refresh for the error page (while fetching data)
-	[x] GDP Growth bug
-	[x] fix "ams and brussels" bug + input filter bug
-	
-= Security improvements
-	[x] strickt input validation
-	[x] fix enters and commas for strategic evaluation
-	[x] header security
-	[X] dataapp (JWT)
+# Project Updates & Changelog
 
-= Features (must have)
-	[x] Make stock profile editable
-	[x] Daily auto-refresh the stocks from portfolio
-	[x] Improve CSS
-	[x] Automate Dividend expectations
-	[x] Add manual bond adder
-	[x] generate portfolio statistics (Currency / geography exposure + asset type %)
-	[x] add inpage update / value dividend expectation (and payout) updates
-	[x] view purchase conditions
-	[x] add support for ETFs
-	
+This repository tracks ongoing engineering enhancements, security improvements, and feature developments for the stock portfolio management platform.
 
+---
+
+## 🚀 Engineering Improvements
+
+- Modularized database logic by moving DB handling out of `logic.py`
+- Introduced a dedicated data layer to simplify integration of alternative data sources
+- Hardened `securityFilter` logic to prevent stock history injection issues:
+  - Improved sanitization and filtering for malformed or incomplete financial entries
+  - Handled edge cases with `NaN`, `None`, `inf`, or zero values that triggered security violations
+- Fixed BWSN view rendering bug
+- Introduced centralized configuration file support
+- Added DB indexes to boost performance on stock profile queries
+- Updated `yfinance` to latest version to bypass previous request blocks
+- Implemented hourly token refresh for stock data refresher
+- Corrected dividend table layout and % calculations
+- Handled status field for special/active states properly
+- Enhanced insert logic for `stock` and `bond` asset types
+- Investigated multi-stock request batching to bypass rate limits (no viable solution yet for detailed stats)
+- Ensured bonds are included in updates (using `regularMarketPrice`)
+- Added token refresh handling for data fetch error pages
+- Fixed GDP growth parsing bug
+- Corrected input filters and region-specific naming bugs ("ams and brussels")
+
+---
+
+## 🔐 Security Improvements
+
+- Implemented strict input validation across all endpoints
+- Fixed input parsing issues with newline and comma-separated strategic evaluations
+- Enforced secure headers for web responses
+- Upgraded authentication to JWT via `dataapp`
+
+---
+
+## 🧩 Must-Have Features
+
+- Made stock profiles fully editable from the frontend
+- Enabled daily auto-refresh for portfolio-held stocks
+- Improved CSS for better UI/UX consistency
+- Automated dividend expectation calculations
+- Added manual bond creation interface
+- Generated portfolio stats: currency & geographic exposure, asset type % breakdowns
+- In-page updates for dividend expectations and payout tracking
+- Added view of stock purchase conditions
+- Full support added for ETFs
+
+---
