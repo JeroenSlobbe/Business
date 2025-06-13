@@ -1,4 +1,4 @@
-Engineering imrpovements
+= Engineering imrpovements
 	[x] remove db from logic.py and create seperate database handler
 	[x] add datalayer, so other sources can be more easily added
 		[x] Improve securityFilter, error:
@@ -21,13 +21,13 @@ Engineering imrpovements
 	[x] GDP Growth bug
 	[x] fix "ams and brussels" bug + input filter bug
 	
-Security improvements
+= Security improvements
 	[x] strickt input validation
 	[x] fix enters and commas for strategic evaluation
 	[x] header security
 	[X] dataapp (JWT)
 
-Features (must have)
+= Features (must have)
 	[x] Make stock profile editable
 	[x] Daily auto-refresh the stocks from portfolio
 	[x] Improve CSS
