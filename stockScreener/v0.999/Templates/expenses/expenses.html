@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Expense manager</h1>
+<!-- expenses List -->
+<div class="content-box">
+    <h2>All Expenses</h2>
+	<table class="styled-table">
+        <thead>
+            <tr>
+                <th>Expense</th>
+				<th>Type</th>
+				<th>Frequency</th>
+				<th>Cost</th>
+				<th>Survival</th>
+				<th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+		{% for item in expenses %}
+		<tr>
+			<form action="/expenses/update-expense" method="POST" style="display:inline;">
+				<td><input type="text" id="expense" name="expense" value="{{ item[1] }}"></td>
+				<td>
+					<select name="frequency" id="frequency" required>
+						<option value="1" {% if item[3] == 1 %}selected{% endif %}>Annually</option>
+						<option value="4" {% if item[3] == 4 %}selected{% endif %}>Quarterly</option>
+						<option value="6" {% if item[3] == 6 %}selected{% endif %}>Bi-annual</option>
+						<option value="12" {% if item[3] == 12 %}selected{% endif %}>Monthly</option>
+					</select>
+				</td>
+				<td>
+					<select name="type" id="type" required>
+						{% for expenseType_item in expenseTypes %}
+							<option value="{{ expenseType_item[0] }}" 
+								{% if expenseType_item[0] == item[2] %}selected{% endif %}>
+								{{ expenseType_item[1] }}
+							</option>
+						{% endfor %}
+					</select>
+				</td>
+				<td><input type="text" id="cost" name="cost" value="{{ item[4] }}"></td>
+				<td>
+					<select name="survival" id="survival" required>
+						<option value="1" {% if item[5] == 1 %}selected{% endif %}>Yes</option>
+						<option value="0" {% if item[5] == 0 %}selected{% endif %}>No</option>
+					</select>
+				</td>
+				<td>
+					<input type="hidden" name="expense_id" value="{{ item[0] }}">
+					<button type="submit" color="blue">Update</button>	
+				</td>
+			</form>
+		
+			<form action="/expenses/delete-expense" method="POST" style="display:inline;">
+            <td>
+				<input type="hidden" name="expense_id" value="{{ item[0] }}">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this expense?')">Delete</button>
+			</td>
+            </form>
+		</tr>
+		{% endfor %}
+		</table>
+</div>
+
+<!-- Add expense Form -->
+<div class="content-box">
+    <h2>Add income allocation (expenses + investments) category</h2>
+    <form action="/expenses/add-expense" method="POST">
+        <div class="form-group">
+            <label for="expense">Expense:</label>
+			<input type="text" name="expense" id="expense" >
+        </div>
+		<div class="form-group">
+            <label for="expense">Expense type:</label>
+			<select name="type" id="type" required>
+				{% for item in expenseTypes %}
+					<option value="{{ item [0] }}">{{ item[1] }}</option>
+				{% endfor %}
+			</select>
+        </div>
+        <div class="form-group">
+            <label for="frequency">frequency:</label>
+            <select name="frequency" id="frequency" required>
+                <option value="1">Anually</option>
+                <option value="4">Quarterly</option>>
+                <option value="6">Bi-annual</option>
+                <option value="12">Monthly</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="expected_dividend">Cost of the expense:</label>
+            <input type="number" name="cost" id="cost" step="0.01">
+        </div>
+		<div class="form-group">	
+			<select name="survival" id="survival" required>
+				<option value="1">Yes</option>
+				<option value="0">No</option>
+			</select>
+		</div>
+        <button type="submit">Add expense</button>
+    </form>
+    
+</div>
+
+<!-- Transactions List -->
+<div class="content-box">
+    <h2>Add expense category</h2>
+    <form action="/expenses/add-category" method="POST">
+        <div class="form-group">
+            <label for="expenseType">Expense type:</label>
+			<input type="text" name="expenseType" id="expenseType" >
+        </div>
+        <button type="submit">Add category</button>
+    </form>
+</div>
+
+<!-- Transactions List -->
+<div class="content-box">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Expense Type</th>
+				<th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+		{% for item in expenseTypes %}
+		<tr>
+			<form action="/expenses/update-expense-category" method="POST" style="display:inline;">
+				<td><input type="text" id="category" name="category" value="{{ item[1] }}"></td>
+				<td>
+					<input type="hidden" name="category_id" value="{{ item[0] }}">
+					<button type="submit" color="blue">Update</button>	
+				</td>
+			</form>
+			<form action="/expenses/delete-category" method="POST" style="display:inline;">
+            <td>
+				<input type="hidden" name="category_id" value="{{ item[0] }}">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this category?')">Delete</button>
+			</td>
+            </form>
+		</tr>
+        
+	{% endfor %}
+</div>
+{% endblock %}
+

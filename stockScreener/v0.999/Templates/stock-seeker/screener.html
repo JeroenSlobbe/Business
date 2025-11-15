@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Search for Investment Opportunities</h1>
+
+<div class="content-container">
+    <div class="content-box-left" style="flex: 1;">
+        <h2>Search available stocks based on below parameters</h2>
+		<form id="stockForm">
+		  <table>
+			<!-- Sector -->
+			<tr>
+			  <td><label for="sector">Sector:</label></td>
+			  <td colspan="3">
+				<select name="sector" id="sector">
+				  <option value="none">None</option>
+				  {% for sector in sectors %}
+					<option value="{{ sector[0] }}">{{ sector[1] }}</option>
+				  {% endfor %}
+				</select>
+			  </td>
+			</tr>
+
+			<!-- P/E Ratio -->
+			<tr>
+			  <td><label for="pe_ratio_min">P/E Ratio Between:</label></td>
+			  <td><input type="number" step="0.01" name="pe_ratio_min" id="pe_ratio_min" style="width:100px;" /></td>
+			  <td><label for="pe_ratio_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="pe_ratio_max" id="pe_ratio_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Price -->
+			<tr>
+			  <td><label for="price_min">Price Between:</label></td>
+			  <td><input type="number" step="0.01" name="price_min" id="price_min" style="width:100px;" /></td>
+			  <td><label for="price_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="price_max" id="price_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Interest Coverage Ratio (ICR) -->
+			<tr>
+			  <td><label for="icr_min">ICR Between:</label></td>
+			  <td><input type="number" step="0.01" name="icr_min" id="icr_min" style="width:100px;" /></td>
+			  <td><label for="icr_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="icr_max" id="icr_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Current Ratio -->
+			<tr>
+			  <td><label for="currentRatio_min">Current Ratio Between:</label></td>
+			  <td><input type="number" step="0.01" name="currentRatio_min" id="currentRatio_min" style="width:100px;" /></td>
+			  <td><label for="currentRatio_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="currentRatio_max" id="currentRatio_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Price-to-Book Ratio -->
+			<tr>
+			  <td><label for="pbratio_min">PB Ratio Between:</label></td>
+			  <td><input type="number" step="0.01" name="pbratio_min" id="pbratio_min" style="width:100px;" /></td>
+			  <td><label for="pbratio_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="pbratio_max" id="pbratio_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Beta -->
+			<tr>
+			  <td><label for="beta_min">Beta Between:</label></td>
+			  <td><input type="number" step="0.01" name="beta_min" id="beta_min" style="width:100px;" /></td>
+			  <td><label for="beta_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="beta_max" id="beta_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- 5-Year Average Return -->
+			<tr>
+			  <td><label for="fiveYearAverageReturn_min">5Y Avg Return Between:</label></td>
+			  <td><input type="number" step="0.01" name="fiveYearAverageReturn_min" id="fiveYearAverageReturn_min" style="width:100px;" /></td>
+			  <td><label for="fiveYearAverageReturn_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="fiveYearAverageReturn_max" id="fiveYearAverageReturn_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Dividend Yield -->
+			<tr>
+			  <td><label for="dividendYield_min">Dividend Yield Between:</label></td>
+			  <td><input type="number" step="0.01" name="dividendYield_min" id="dividendYield_min" style="width:100px;" /></td>
+			  <td><label for="dividendYield_max">and:</label></td>
+			  <td><input type="number" step="0.01" name="dividendYield_max" id="dividendYield_max" style="width:100px;" /></td>
+			</tr>
+
+			<!-- Submit Button -->
+			<tr>
+			  <td colspan="4" style="text-align: center;">
+				<button type="submit">Run Screener</button>
+			  </td>
+			</tr>
+		  </table>
+		</form>
+
+
+    </div>
+
+    <div class="content-box-right" style="flex: 1;">
+        <!-- Results or additional filters can go here -->
+    </div>
+</div>
+<script>
+document.getElementById('stockForm').addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent default form submission
+
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData.entries());
+
+  fetch('/stock-screener/screen', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.text(); // Expecting HTML snippet from server
+  })
+  .then(html => {
+    document.querySelector('.content-box-right').innerHTML = html;
+  })
+  .catch(error => {
+    document.querySelector('.content-box-right').innerHTML = `<p style="color:red;">Error loading results: ${error.message}</p>`;
+  });
+});
+</script>
+
+{% endblock %}

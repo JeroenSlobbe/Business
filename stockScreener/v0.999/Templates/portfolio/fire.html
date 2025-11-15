@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Recorded Dividends Table -->
+<div class="content-box" id="recordedDividends">
+    <h2>Recorded Dividends</h2>
+	
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Stock</th>
+                <th>Date</th>
+                <th>Dividend per Share</th>
+				<th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dividend in fire %}
+            <tr>
+				<form action="/portfolio/update-dividend-payout" method="POST" style="display:inline;">
+                <td>{{ dividend[0] }}</td>
+                <td>
+					<input type="date" id="dividend_date" name="dividend_date" value="{{ dividend[2] }}">
+				</td>
+                <td><input type="text" id="dps" name="dps" value="{{ dividend[3] }}"></td>
+				<td>
+                        <input type="hidden" name="dividend_id" value="{{ dividend[1] }}">
+                        <button type="submit" color="blue">Update</button> 
+                </td>
+				</form>
+                <td>
+                    <form action="/portfolio/fire" method="POST" style="display:inline;">
+                        <input type="hidden" name="dividend_id" value="{{ dividend[1] }}">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this dividend?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Dividend Expectations Table -->
+<div class="content-box" id="expectedDividends">
+    <h2>Dividend Expectations</h2>
+	Please note: you can ignore the year part of the expected day date.
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Stock</th>
+                <th>Month</th>
+				<th>Day</th>
+                <th>Expected Dividend per Share</th>
+				<th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expectation in expectations %}
+            <tr>
+				<form action="/portfolio/update-dividend-expectation" method="POST" style="display:inline;">
+					<td>{{ expectation[0] }}</td>
+					<td>
+						<select name="expectedMonth" id="expectedMonth" required>
+							{% for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
+								<option value="{{ month }}" {% if expectation[2] == month %}selected{% endif %}>{{ month }}</option>
+							{% endfor %}
+						</select>
+					</td>
+					<td>
+						<input type="date" id="expectedDay" name="expectedDay" value="{{ expectation[5] }}">
+					</td>
+					<td><input type="text" id="dps" name="dps" value="{{ expectation[3] }}"></td>
+					<td>
+						<input type="hidden" name="expectation_id" value="{{ expectation[4] }}">
+						<button type="submit" color="blue">Update</button>
+						
+					</td>
+				</form>
+                <td>
+                    <form action="/portfolio/fire" method="POST" style="display:inline;">
+                        <input type="hidden" name="expectation_id" value="{{ expectation[4] }}">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this expectation?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- Record Dividend Block -->
+<div class="content-box">
+    <h2>Record Dividend</h2>
+	<p>Note: received dividends need to be inserted in Euros.</p>
+    <form action="/portfolio/fire" method="POST">
+        <div class="form-group">
+            <label for="stock_id">Stock:</label>
+            <select name="stock_id" id="stock_id" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock[1] }}">{{ stock[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="date">Payment date:</label>
+            <input type="date" name="record_date" id="record_date" required>
+        </div>
+        <div class="form-group">
+            <label for="dividend_per_share">Dividend per Share:</label>
+            <input type="number" name="dividend_per_share" id="dividend_per_share" step="0.01" required>
+        </div>
+        <button type="submit">Record Dividend</button>
+    </form>
+</div>
+
+<!-- Set Dividend Expectations Block -->
+<div class="content-box">
+    <h2>Set Dividend Expectations</h2>
+	<p>Note: dividend expectations need to be inserted in Euros.</p>
+    <form action="/portfolio/set-dividend-expectations" method="POST">
+        <div class="form-group">
+            <label for="stock_id">Stock:</label>
+            <select name="stock_id" id="stock_id" required>
+                {% for stock in stocks %}
+                    <option value="{{ stock[1] }}">{{ stock[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="month">Month:</label>
+            <select name="month" id="month" required>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="expected_dividend">Expected Dividend per Share:</label>
+            <input type="number" name="expected_dividend" id="expected_dividend" step="0.01" required>
+        </div>
+        <button type="submit">Set Expectation</button>
+    </form>
+</div>
+{% endblock %}

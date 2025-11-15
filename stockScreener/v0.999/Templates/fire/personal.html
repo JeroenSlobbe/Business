@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Personal finance settings</h1>
+
+
+<!-- Add financial situation Form -->
+<div class="content-box">
+    <h2>Record current financial situation (salary and savings)</h2>
+    <form action="/fire/add-financial-situation" method="POST">
+        <div class="form-group">
+            <label for="salary">Salary:</label>
+            <input type="number" name="salary" id="salary" step="0.01" required>
+        </div><br>
+        <div class="form-group">
+            <label for="savings">Savings:</label>
+            <input type="number" name="savings" id="savings" step="0.01" required>
+        </div><br>
+        <div class="form-group">
+            <label for="date">Date:</label>
+            <input type="date" name="date" id="date" required>
+        </div>
+        <button type="submit">Add situation</button>
+    </form>
+</div>
+
+
+<div class="content-box">
+    <h2>History of financial situation</h2>
+	<table class="styled-table">
+        <thead>
+            <tr>
+                <th>Salary</th>
+				<th>Savings</th>
+				<th>Date</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+		{% for item in finance_history %}
+		<tr>
+			<td>
+				&#8364; {{ item[1] }}
+			</td>
+			<td>
+				&#8364; {{ item[3] }}
+			</td>
+			<td>
+				{{ item[2] }}
+			</td>
+			<form action="/fire/delete-personal-situation" method="POST" style="display:inline;">
+            <td>
+				<input type="hidden" name="personal_situation_id" value="{{ item[0] }}">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this situation?')">Delete</button>
+			</td>
+            </form>
+		</tr>
+		{% endfor %}
+		</table>
+</div>
+
+{% endblock %}
+

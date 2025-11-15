@@ -1,0 +1,30 @@
+<p>
+  Displaying {{ results|length }} of <b>{{ total }}</b> records found
+</p>
+
+<table class="styled-table">
+  <thead>
+    <tr>
+      <th>Ticker</th>
+      <th>Stockname</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in results %}
+      <tr>
+        <td>
+          <a href="/stock-seeker/evaluate-stock/{{ row[0] }}">{{ row[0] }}</a>
+        </td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[4] }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if total > results|length %}
+  <p style="color: #888; font-style: italic; margin-top: 10px;">
+    Refine your filters to narrow down further.
+  </p>
+{% endif %}

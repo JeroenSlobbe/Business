@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-box">
+    <h1>Welcome to FIRE Portfolio Manager</h1>
+	<div class="marketing-summary">
+		<p>Are you ready to take control of your financial future and embrace the path to Financial Independence, Retire Early (FIRE)? Our Portfolio Manager is crafted for the intelligent value investor who wants to spend quality time in the market without the burden of real-time data costs.</p>
+		<p><b>Unleash the Power of Advanced Financial Analysis: </b>We bring sophisticated financial statistics and analysis to your fingertips, making professional-grade insights accessible to common users. Our application empowers you to make informed investment decisions by leveraging the latest market snapshots, ensuring you focus on the here and now rather than relying solely on historical data.</p>
+		<p><b>Value Investing Made Simple: </b>Discover value stocks that align with your investment strategy. Our intuitive platform guides you through the process of identifying stocks with potential, helping you build a robust portfolio that maximizes returns while minimizing risks.</p>
+		<p><b>Affordable Investment Management: </b>Professional investors often rely on expensive data terminals, driving up costs for everyday users. Our Portfolio Manager eliminates this barrier by providing you with cost-effective tools and data sourced from reputable open-data platforms such as CBS, Yahoo finance, and the European Central Bank (ECB). This way, you can stay informed about macroeconomic trends without breaking the bank.</p>
+		<p><b>Incorporate Macroeconomic Insights: </b>Incorporate vital macroeconomic views into your investment strategy. Our application uses data from government sources to give you a holistic view of the market, ensuring your investment decisions are grounded in the latest economic indicators.</p>
+		<p><b>For the Intelligent Value Investor: </b>Designed for savvy investors who value thorough analysis, our application provides the tools you need to navigate the stock market confidently. Whether you're a seasoned investor or just starting your journey, our platform is here to support you every step of the way.</p>
+		<p><b>Join the Revolution: </b>Experience a new way of managing your portfolio that blends advanced analytics with practical affordability. Spark enthusiasm and confidence in your investment journey with our Portfolio Manager, and take a decisive step toward achieving financial independence.</p>
+		
+		<p><strong>Start your journey today and see how our Portfolio Manager can help you achieve your investment goals with ease and precision!</strong></p>
+	</div>
+</div>
+<div class="content-box">	
+	<center><h2>Decission transparancy</h2></center>
+	<ul>
+		<li>This application is <b>not</b> financial advise and for entertainment purposes only.</li>
+		<li>The 3 sigma rule, for computing the industrial benchmark is applied (meaning outlyers 3 sigmas away from the average are not used for computing the benchmark).</li>
+		<li>Stock data is NOT real-time, when searching for a stock, you should refresh the portfolio data. </li>
+		<li>Please be gentle with refreshing the stock data, the script to pull everything from yahoo takes around 3 hours (to avoid API abuse rules). Let it finish before restarting.</li>
+		<li>Only stocks on the NYSE, Amsterdam and Brussel are supported (mainly because I don't want to pay more connection fees).</li>
+		<li>If the dividend yield is not available, its calculated by dividing the lastDividendValue by the stock value. If this is also not available, it looks at the historic dividend payout, to calculate a payout ratio.</li>
+		<li>If Operating Income is not available (for example for most banking stocks), <i>Net Income From Continuing And Discontinued Operation is used instead.</li>
+		<li>if ebit is not available, (also banking) we use the value from above, and add the interest expense and tax provision to it</li>
+		<li>If the current ratio couldn't be computed directly from the balance sheet, the proprietary yahoo statistic is used.</li>
+		<li>The yahoofinance libary dividends table contains the announcement date, not the payment date, while for fire you want to know in which month you get your money. On average you receive it a month later, so this will be the default. Additional functionality is available to correct</li>
+		<li>If the company has zero debt or no interest expense, the ICR is set to EBIT (officially you should divide by the IE, but computers don't like to divide by zero, and I dont want to store infinite in the database, so ebit it is</li>
+		<li>For bonds, we allow decimal values. In the GIRO app, it mentions the amount bought, divide this by 100 and add to your portfolio, to accuratly track bonds </li>
+	</ul>
+</div>
+<div class="content-box">	
+	<center><h2>Release notes</h2></center>
+	<ul>
+		<li>Updating the DB (with only NYSE, XAMS and XBRU), will cost you 60KB in diskspace, so don't be affraid. However, it takes around 1 hour and 8 minutes to run the update</li>
+		<li>You need to have the data engine running as well as the main application for the data operations to work</li>
+		<li>Note, you need to start the data runner in the datamangement folder</li>
+	</ul>
+</div>
+{% endblock %}

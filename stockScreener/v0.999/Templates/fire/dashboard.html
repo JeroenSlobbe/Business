@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>FIRE progress</h2>
+<div class="basic-info-box">
+        <div class="basic-info">
+            <div><strong><i class="fa-solid fa-sack-dollar" style="color: #A0522D;"></i> Portfolio Value: </strong>&#8364; {{ "{:,.2f}".format(pstatistics[0].portfolio_value | round(2)) }} </div>
+			<div><strong><i class="fa-solid fa-piggy-bank" style="color: #FFC0CB;"></i> Total savings:</strong> &#8364; {{ "{:,.2f}".format(personalFinance[1] | round(2)) }} </div>
+        </div>
+        <div class="basic-info">
+			{% set color = '#4CAF50' if pstatistics[0].total_return > 0 else '#F44336' %}
+            <div><strong><i class="fas fa-receipt" style="color: #FFD700;"></i> Monthly expenses:</strong> &#8364; {{ fireStatistics[2] | round(2) }} </div>
+			<div><strong><i class="fas fa-plus" style="color: #8B0000;"></i> Survival expenses:</strong> &#8364; {{ fireStatistics[7] | round(2) }} </div>
+			<div><strong><i class="fas fa-rocket" style="color: #00FF00;"></i> Monthly investments:</strong> &#8364; {{ fireStatistics[0] | round(2) }} </div>
+			<div><strong><i class="fas fa-piggy-bank" style="color: #FFC0CB;"></i> Monthly savings:</strong> &#8364; {{ fireStatistics[1] | round(2) }} </div>
+			<div><strong><i class="fas fa-question" style="color: #000000;"></i> Unknown:</strong> &#8364; {{ fireStatistics[3] | round(2) }} </div>
+        </div>
+        <div class="basic-info">
+            <div><strong><i class="fas fa-fire" style="color: #FFC066;"></i> Monthly Dividends: </strong>&#8364; {{ avg_monthly_dividends | round(2) }}</div>
+			<div><strong><i class="fas fa-hard-hat" style="color: #808080;"></i> Monthly income: </strong>&#8364; {{ "{:,.2f}".format(personalFinance[0] | round(2)) }} </div>
+        </div>
+</div>
+
+<div class="content-container">
+    <div class="content-box-left" style="flex: 1;">
+		<center><h2>FIRE statistics</h2></center>
+		<ul id="fireStats">
+			<li id="percSaveInvest">Percentage income allocated to investment and saving: <b> {{ fireStatistics[4] | round(2)}} % </b></li>
+			<li id="percInvest">Percentage income allocated to investment: <b> {{ fireStatistics[5] | round(2)}} % </b></li>
+			<li id="monthsEmergency">Number of months covered by savings/emergency fund: <b>{{ fireStatistics[6] | round | int}}</b></li>
+			<li id="monthlyDebt">Monthly debt payments: <b>{{ personalFinance[2] | round(2)  }}</b></li>
+			<li id="fireGoal">Fire goal with <span id="swrLabel">4%</span> widraw rate: <b>&#8364; {{ "{:,.2f}".format(fire[0] | round(2)) }}</b></li>
+			<li id="baristaGoal">Barista goal with <span id="swrLabel2">4%</span> widraw rate: <b>&#8364; {{ "{:,.2f}".format(fire[4] | round(2)) }}</b></li>
+			<li id="percCompleted">Percentage of FIRE goal completed: <b>{{ fire[1] | round(2)  }} %</b></li>
+			<li id="yearsToFire">You will be FIRE in: <b>{{ fire[2] | round(2) }}</b> years </li>
+			<li id="yearsToBarista">You will be barista FIRE in: <b>{{ fire[5] | round(2) }}</b> years </li>
+			---------------------------------------------------------------
+			<li id="fireStage">Your FIRE stage: <b>{{ fire[3] }}</b></li>
+		</ul>
+	</div>
+	<div class="content-box-right" style="flex: 1;">
+		<center><h2>See how changes impact your FIRE number</h2></center>
+		<form id="fireForm">
+		  <table class="fire-table">
+			<tr>
+			  <th>Parameter</th>
+			  <th>Value</th>
+			  <th>Parameter</th>
+			  <th>Value</th>
+			</tr>
+			<tr>
+			  <td>Monthly Income</td>
+			  <td><input width="150" type="number" id="income" step="100" value="{{ personalFinance[0] }}" style="width: 100px;"></td>
+			  <td>Monthly Investment</td>
+			  <td><input type="number" id="investment" step="100" value="{{ fireStatistics[0] }}" style="width: 100px;"></td>
+			</tr>
+			<tr>
+			  <td>Monthly passive income</td>
+			  <td><input type="number" id="avgMonthlyDividends" step="50" value="{{ avg_monthly_dividends | round(2) }}" style="width: 100px;"></td>
+			  <td>Current Savings</td>
+			  <td><input type="number" id="savings" step="100" value="{{ personalFinance[1] | round(0) }}" style="width: 100px;"></td>
+			</tr>
+			<tr>
+			  <td>Monthly Savings</td>
+			  <td><input type="number" id="monthlySavings" step="100" value="{{ fireStatistics[1] | round(2) }}" style="width: 100px;"></td>
+			  <td>Monthly Debt</td>
+			  <td><input type="number" id="debt" step="100" value="{{ personalFinance[2] }}" style="width: 100px;"></td>
+			</tr>
+			<tr>
+			  <td>Living Expenses</td>
+			  <td><input type="number" id="expenses" step="100" value="{{ fireStatistics[2] | round(0)}}" style="width: 100px;"></td>
+			  <td>Minimum Expenses</td>
+			  <td><input type="number" id="minExpenses" step="100" value="{{ fireStatistics[7] }}" style="width: 100px;"></td>
+			</tr>
+			<tr>
+			  <td>Safe Withdrawal Rate (%)</td>
+			  <td><input type="number" id="swr" step="0.1" value="4" style="width: 100px;"></td>
+			  <td>Expected return (%)</td>
+			  <td><input type="number" id="expectedReturn" step="0.1" value="3" style="width: 100px;"></td>
+			</tr>
+						</tr>
+			<tr>
+			  <td>Current portfolio value</td>
+			  <td><input type="number" id="currPortfolio" step="0.1" value="{{ pstatistics[0].portfolio_value | round(0) }}" style="width: 100px;"></td>
+			</tr>
+		  </table>
+
+		  <div style="text-align: center;">
+			<button type="button" onclick="simulateFire()">Simulate</button>
+			<button type="button" onclick="resetDefaults()">Reset to Defaults</button>
+		  </div>
+		</form>
+    </div>
+</div>
+<!-- Container for Flex Items -->
+<div class="content-container">
+    <!-- Dividend Expectations -->
+    <div class="content-box-left" style="flex: 1;">
+        <center><h2>Monthly Expenses</h2></center>
+        <canvas id="expenseDonutChart"></canvas>
+    </div>
+
+    <!-- Industry Pie Chart -->
+    <div class="content-box-right" style="flex: 1;">
+		<center><h2>Placeholder</h2></center>
+		<div class="chart-container">
+			<canvas id="industryPieChart"></canvas>
+		</div>
+    </div>
+</div>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const expensesData = {{ expenses_by_type | tojson }};
+
+    const labels = expensesData.map(item => item[0]);       // Expense type
+    const annualCosts = expensesData.map(item => item[1]);  // Annual cost
+    const tooltips = expensesData.map(item => item[2]);     // Tooltip details
+
+    const monthlyCosts = annualCosts.map(cost => cost / 12);
+
+    const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw(chart) {
+            const { width } = chart;
+            const { ctx } = chart;
+            ctx.restore();
+            //const fontSize = (width / 150).toFixed(2);
+			const fontSize = 1.5;
+            ctx.font = `${fontSize}em sans-serif`;
+            ctx.textBaseline = 'middle';
+
+            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const text = `€${total.toFixed(0)}/mo`;
+            const textX = Math.round((chart.width - ctx.measureText(text).width) / 2);
+            const textY = chart.height / 2;
+
+            ctx.fillStyle = '#333';
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+        }
+    };
+
+    const ctx = document.getElementById('expenseDonutChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: monthlyCosts,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                    '#9966FF', '#FF9F40', '#66BB6A', '#EC407A',
+                    '#AB47BC', '#26C6DA', '#D4E157', '#5C6BC0',
+                    '#FF7043', '#789262'
+                ]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 16
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const index = context.dataIndex;
+                            const label = context.label;
+                            const value = context.raw;
+                            return [`${label}: €${value.toFixed(2)}/mo`, ...tooltips[index].split(', ').map(e => `• ${e}`)];
+                        }
+                    }
+                },
+                datalabels: {
+                    formatter: (val, ctx) => `${ctx.chart.data.labels[ctx.dataIndex]}: €${val.toFixed(0)}/mo`,
+                    color: '#fff',
+                    anchor: 'center',
+                    align: 'center',
+                    clamp: true,
+                    display: function (context) {
+                        return context.dataset.data[context.dataIndex] > 10; // only for larger slices
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 10
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels, centerTextPlugin]
+    });
+});
+</script><script>
+function simulateFire() {
+  const income = parseFloat(document.getElementById('income').value);
+  const monthlySavings = parseFloat(document.getElementById('monthlySavings').value);
+  const investment = parseFloat(document.getElementById('investment').value);
+  const debt = parseFloat(document.getElementById('debt').value);
+  const expenses = parseFloat(document.getElementById('expenses').value);
+  const minExpenses = parseFloat(document.getElementById('minExpenses').value);
+  const swr = parseFloat(document.getElementById('swr').value) / 100;
+  const savings = parseFloat(document.getElementById('savings').value);
+  const avgMonthlyDividends = parseFloat(document.getElementById('avgMonthlyDividends').value);
+  const expectedReturn = parseFloat(document.getElementById('expectedReturn').value) /100;
+  const currPortfolio = parseFloat(document.getElementById('currPortfolio').value);
+  
+  
+  const annualExpenses = expenses * 12;
+  const annualMinExpenses = minExpenses * 12;
+  const annualInvestments = (investment) * 12;
+
+  const targetPortfolio = annualExpenses / swr;
+  const baristaPortfolio = annualMinExpenses / swr;
+
+  const yearsToFire = yearsToTarget(targetPortfolio, annualInvestments, expectedReturn);
+  const yearsToBarista = yearsToTarget(baristaPortfolio, annualInvestments, expectedReturn);
+
+  const percSaveInvest = ((monthlySavings + investment) / income) * 100
+  const percInvest = (investment * 12 / (income * 12)) * 100;
+  const monthsEmergency = savings / expenses;
+
+  const percRealized = currPortfolio / targetPortfolio * 100;
+  const fireStage = calculateFireStage(expenses, income, debt, avgMonthlyDividends, savings, minExpenses);
+
+  // Update DOM
+  document.querySelector('#percSaveInvest b').textContent = percSaveInvest.toFixed(2) + ' %';
+  document.querySelector('#percInvest b').textContent = percInvest.toFixed(2) + ' %';
+  document.querySelector('#monthsEmergency b').textContent = Math.round(monthsEmergency);
+  document.querySelector('#monthlyDebt b').textContent = debt.toFixed(2);
+  document.querySelector('#fireGoal b').textContent = '€ ' + targetPortfolio.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  document.querySelector('#baristaGoal b').textContent = '€ ' + baristaPortfolio.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  document.querySelector('#swrLabel').textContent = (swr * 100).toFixed(0) + '%';
+  document.querySelector('#swrLabel2').textContent = (swr * 100).toFixed(0) + '%';
+  document.querySelector('#percCompleted b').textContent = percRealized.toFixed(2) + ' %';
+  document.querySelector('#yearsToFire b').textContent = yearsToFire.toFixed(2);
+  document.querySelector('#yearsToBarista b').textContent = yearsToBarista.toFixed(2);
+  document.querySelector('#fireStage b').textContent = fireStage;
+}
+
+function yearsToTarget(FV, P, r, PV = 0) {
+  // FV = future value target
+  // P = annual contribution
+  // r = annual return
+  // PV = current portfolio value
+
+  let years = 0;
+  let current = PV;
+
+  while (current < FV && years < 100) {
+    current = current * (1 + r) + P;
+    years += 1;
+  }
+
+  return years;
+}
+
+
+function calculateFireStage(monthlyExpenses, income, monthlyDebt, avgMonthlyDividends, savings, minimalExpenses) {
+  let fireStage = "Dependent";
+  if (income > monthlyExpenses) {
+    fireStage = "Stable situation";
+    if (savings > 3 * monthlyExpenses) {
+      fireStage = "Stable with emergency fund";
+      if (monthlyDebt === 0) {
+        fireStage = "Debt free with emergency fund";
+        if (avgMonthlyDividends > minimalExpenses) {
+          fireStage = "Barista FIRE";
+          if (avgMonthlyDividends > monthlyExpenses) {
+            fireStage = "FIRE";
+          }
+        }
+      }
+    }
+  }
+  return fireStage;
+}
+
+function resetDefaults() {
+  location.reload();
+}
+</script>
+
+
+
+
+
+{% endblock %}
