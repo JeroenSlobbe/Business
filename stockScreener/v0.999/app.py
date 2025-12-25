@@ -4,21 +4,69 @@ import requests
 from Config.config import *
 from Logic.logic import *
 from Logic.externalDataLogic import *
+from Logic.ai import *
 import uuid
 import threading
 import time
 import jwt
 import re
+import os
 from datetime import datetime, timedelta, timezone
+from flask_limiter import Limiter 
+from flask_limiter.util import get_remote_address
+from flask import session
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.secret_key = Config.APPSecretKey
 
+limiter = Limiter( key_func=get_remote_address, default_limits=["120 per hour"] )
     
 @app.route("/")
 def route_home():
     return render_template("home.html")  # Render a template for the home page
+
+
+# ******************************** AI stuff ********************************
+@app.route('/portfolio/ai', methods=['GET', 'POST'])
+def route_view_ai_advisor():
+    return render_template('ai/bot.html', )
+
+def add_to_history(role, content): 
+    if "history" not in session: 
+        session["history"] = [] 
+    history = session.get("history", []) 
+    history.append({"sender": role, "content": content}) 
+    session["history"] = history
+    session.modified = True 
+
+def history_to_txt():
+    return "\n".join([f"{m['sender']}: {m['content']}" for m in session["history"]])
+    
+@app.route('/ai/chat', methods=['POST'])
+@limiter.limit("4 per minute")
+def route_ai_chat():
+    try:
+        data = request.get_json(force=True)
+        user_message = data.get("message", "").strip()
+
+        if not user_message:
+            return jsonify({"answer": "I didn't receive a question."}), 400
+        
+        add_to_history("user", ai_user_input_validation(user_message, TOKEN_USER_QUERY_LIMIT))
+        # Call your secure AI pipeline
+        ai_answer = askAI(user_message, history_to_txt())
+        add_to_history("ai", ai_user_input_validation(ai_answer, TOKEN_USER_QUERY_LIMIT))
+        return jsonify({"answer": ai_answer})
+
+    except Exception as e:
+        # Log internally, but don't leak details to the user
+        print(f"[ERROR] /ai/chat failed: {e}")
+        return jsonify({"answer": "Something went wrong while contacting the AI."}), 500
+
+
+# ******************************** Fire views ********************************
 
 @app.route('/fire/personal', methods=['GET', 'POST'])
 def view_personal_situation():
@@ -609,4 +657,5 @@ if __name__ == '__main__':
     token_refresh_thread.start()
     app.run(debug=Config.debug, port=Config.basePort)
    
+
 
