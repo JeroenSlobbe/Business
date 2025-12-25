@@ -13,12 +13,19 @@ class Config:
     
     #Security (app.py)
     DATA_APP_API_KEY = "PleaseChangeThisAPI_KEY_GITRepositoryPlaceHolder"
+    APPSecretKey = "PleaseChangeThisAPP_KEY_GITRepositoryPlaceHolder"
     LOGIN_URL = 'http://127.0.0.1:5001/token'
     PROTECTED_URL = 'http://127.0.0.1:5001/protected'
+    MISTRAL_API_KEY = "PleaseChangeThisAPI_KEY_GITRepositoryPlaceHolder"
     
     # Data sources
     NYSETickerURL = 'https://www.nyse.com/publicdocs/nyse/markets/nyse/NYSE_and_NYSE_MKT_Trading_Units_Daily_File.xls'
     EURONEXTTickerURL = 'https://live.euronext.com/en/pd_es/data/stocks/download?mics=dm_all_stock&market=06%2C07&initialLetter=&fe_type=txt&fe_decimal_separator=&fe_date_format=d%2Fm%2FY&date='
+   
+    # AI stuff
+    TOXIC_THRESHOLD = 0.7
+    TOKEN_USER_QUERY_LIMIT = 150
+    TOKEN_CHAT_HISTORY_LIMIT = 750
    
     # Supported exchanges
     exchanges = ['NYSE', 'XAMS','XBRU', 'XETR']
